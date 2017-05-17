@@ -46,7 +46,7 @@ In traditional compiled-language process, a chunk of source code, your program, 
 
     **Note:** The difference between tokenizing and lexing is subtle and academic, but it centers on whether or not these tokens are identified in a *stateless* or *stateful* way. Put simply, if the tokenizer were to invoke stateful parsing rules to figure out whether `a` should be considered a distinct token or just part of another token, *that* would be **lexing**.
 
-    **注意：** 分词和词法分析的区别是微妙和学术性的,但是这个主要和解析方式是根据*有状态*还是*无状态*的方式来进行的有关。简单来说,如果分词分析器借助有状态的解析规则去搞清楚 `a`是一个唯一的组成部分或者只是其他部分的组成部分,*这* 就叫做**词法分析**.
+    **注意：** 分词和词法分析的区别是微妙和学术性的,但是这个主要和解析方式是根据*有状态*还是*无状态*的方式来进行的有关。简单来说,如果分词分析器借助有状态的解析规则去搞清楚 `a`是一个唯一的组成部分或者只是其他部分的组成部分,*这* 就叫做**词法分析**.(译者注:如果作为一个无状态的语言那么上文的a肯定是作为一个单独的部分用来被解析的)
 
 2. **Parsing:** taking a stream (array) of tokens and turning it into a tree of nested elements, which collectively represent the grammatical structure of the program. This tree is called an "AST" (<b>A</b>bstract <b>S</b>yntax <b>T</b>ree).
 
