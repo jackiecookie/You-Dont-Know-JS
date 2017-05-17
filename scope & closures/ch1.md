@@ -10,23 +10,43 @@ One of the most fundamental paradigms of nearly all programming languages is the
 
 Without such a concept, a program could perform some tasks, but they would be extremely limited and not terribly interesting.
 
+没有了这些概念,程序还是可以执行某些任务,但是会极度的受局限而且完全没有乐趣可言。
+
 But the inclusion of variables into our program begets the most interesting questions we will now address: where do those variables *live*? In other words, where are they stored? And, most importantly, how does our program find them when it needs them?
+
+但是一旦在程序中包含了变量这个概念就产生了很多有趣的问题我们需要对付:变量在哪里*存活*?换句话来说,它存在哪里?而却更重要的问题是,我们的程序是怎么在它需要使用变量的时候找到他的?
 
 These questions speak to the need for a well-defined set of rules for storing variables in some location, and for finding those variables at a later time. We'll call that set of rules: *Scope*.
 
+这些问题需要定义一些规则把变量存在某些位置,在稍后需要使用的时候把变量找出来.我们把这个规则叫做:*作用域*
+
 But, where and how do these *Scope* rules get set?
+
+但是,这些*规则*是如何以及在哪里存取变量的呢?
 
 ## Compiler Theory
 
+## 编译理论
+
 It may be self-evident, or it may be surprising, depending on your level of interaction with various languages, but despite the fact that JavaScript falls under the general category of "dynamic" or "interpreted" languages, it is in fact a compiled language. It is *not* compiled well in advance, as are many traditionally-compiled languages, nor are the results of compilation portable among various distributed systems.
+
+这可能不言而喻,或者会令你吃惊,这都取决于你各种语言相互之间的水平,尽管大多数人叫JavaScript归为"动态语言"或者"解释语言",但是事实上他也是编译语言。他*不是*像传统的编译语言的方式预先被编译好,编译好的结果也不能再各种不同分布式系统中移植。
 
 But, nevertheless, the JavaScript engine performs many of the same steps, albeit in more sophisticated ways than we may commonly be aware, of any traditional language-compiler.
 
+但是,尽管如此,JavaScript引擎和大多数传统的编译语言一样执行相同的步骤,以我们不容易意识到的更精妙的方式进行编译。
+
 In traditional compiled-language process, a chunk of source code, your program, will undergo typically three steps *before* it is executed, roughly called "compilation":
+
+在传统的编译语言过程中,组成的源代码,你的程序,值执行*之前*需要经历三个典型的步骤,这些步骤大致可以叫做"编译"。
 
 1. **Tokenizing/Lexing:** breaking up a string of characters into meaningful (to the language) chunks, called tokens. For instance, consider the program: `var a = 2;`. This program would likely be broken up into the following tokens: `var`, `a`, `=`, `2`, and `;`. Whitespace may or may not be persisted as a token, depending on whether it's meaningful or not.
 
+1. **分词/词法分析:** 把字符串拆分成有意义的(对相应的计算机语言来说)字符块,叫做分词。举例来说,注意一下这段代码:`var a=2;`.这段代码基本上会被拆分成以下几个部分:`var`, `a`, `=`, `2`,还有 `;`.空白符或许会被认为是一个部分,这要取决于它对于这个语言来说是否有意义。
+
     **Note:** The difference between tokenizing and lexing is subtle and academic, but it centers on whether or not these tokens are identified in a *stateless* or *stateful* way. Put simply, if the tokenizer were to invoke stateful parsing rules to figure out whether `a` should be considered a distinct token or just part of another token, *that* would be **lexing**.
+
+    **注意：** 分词和词法分析的区别是微妙和学术性的,但是这个主要和解析方式是根据*有状态*还是*无状态*的方式来进行的有关。简单来说,如果分词分析器借助有状态的解析规则去搞清楚 `a`是一个唯一的组成部分或者只是其他部分的组成部分,*这* 就叫做**词法分析**.
 
 2. **Parsing:** taking a stream (array) of tokens and turning it into a tree of nested elements, which collectively represent the grammatical structure of the program. This tree is called an "AST" (<b>A</b>bstract <b>S</b>yntax <b>T</b>ree).
 
