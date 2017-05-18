@@ -50,81 +50,161 @@ In traditional compiled-language process, a chunk of source code, your program, 
 
 2. **Parsing:** taking a stream (array) of tokens and turning it into a tree of nested elements, which collectively represent the grammatical structure of the program. This tree is called an "AST" (<b>A</b>bstract <b>S</b>yntax <b>T</b>ree).
 
+2. **语法分析:** 取出分词完的流(数组)放入一个嵌套元素的树中,用来收集和代表程序的语法结构。这个树叫做"AST"(<b>A</b>bstract <b>S</b>yntax <b>T</b>ree).
+
     The tree for `var a = 2;` might start with a top-level node called `VariableDeclaration`, with a child node called `Identifier` (whose value is `a`), and another child called `AssignmentExpression` which itself has a child called `NumericLiteral` (whose value is `2`).
+
+    `var a = 2;`的树最上层的节点叫做`变量声明`,他的子节点叫做`标识符`(他的值是`a`),他的另外一个子节点叫做`分配表达式`他又一个节点叫做`数字字面量`(他的值是`2`)。
 
 3. **Code-Generation:** the process of taking an AST and turning it into executable code. This part varies greatly depending on the language, the platform it's targeting, etc.
 
+3. **生成代码:** 这个过程是把AST转变成可执行的代码。这个部分的变化跟他的语言,跟他的目标平台等等有很大的关系。
+
     So, rather than get mired in details, we'll just handwave and say that there's a way to take our above described AST for `var a = 2;` and turn it into a set of machine instructions to actually *create* a variable called `a` (including reserving memory, etc.), and then store a value into `a`.
+
+    然而,相比在细节中挣扎,我们可以用简单的方式去描述它, `var a = 2;` 的AST转换成机器层面的代码的方式事实上就是*创建*了一个变量叫做`a`(包括开辟了内存,等等)，然后在把值存入到`a`中。
+
 
     **Note:** The details of how the engine manages system resources are deeper than we will dig, so we'll just take it for granted that the engine is able to create and store variables as needed.
 
+    **注意:** 引擎如何管理系统资源的细节比我们挖掘的要深,我们只需要知道引擎有能力在它需要的时候创建和存储变量。
+
 The JavaScript engine is vastly more complex than *just* those three steps, as are most other language compilers. For instance, in the process of parsing and code-generation, there are certainly steps to optimize the performance of the execution, including collapsing redundant elements, etc.
+
+如同其他的语言编译器一样JavaScript引擎编译步骤比这*区区*三部要复杂很多。举例来说,在语法分析和生成代码的过程中,肯定有一些步骤来优化执行效率,包括折叠修剪节点,等等。
 
 So, I'm painting only with broad strokes here. But I think you'll see shortly why *these* details we *do* cover, even at a high level, are relevant.
 
+所以,这里我只能简单的描绘一下.但是我想你很快可以看的出来，为什么*这些*细节我们需要知道,即使是在高的层面上,他们也是有意义的。
+
 For one thing, JavaScript engines don't get the luxury (like other language compilers) of having plenty of time to optimize, because JavaScript compilation doesn't happen in a build step ahead of time, as with other languages.
+
+首先,JavaScript引擎没有很多(和其他语言编译器一样)充裕的时间去做优化,因为就其他语言而言JavaScript编译器没有在一开始构建这个步骤。
 
 For JavaScript, the compilation that occurs happens, in many cases, mere microseconds (or less!) before the code is executed. To ensure the fastest performance, JS engines use all kinds of tricks (like JITs, which lazy compile and even hot re-compile, etc.) which are well beyond the "scope" of our discussion here.
 
+对JavaScript而言,大多数情况下,编译才刚发生,仅仅几毫秒(甚至更少)后代码就被执行了。为了确保最快的效率,JS用了各种各样的技巧(像JITs,懒编译和甚至热重编译,等等)这些都超出了我们的在这里讨论的"作用域"的范围之外。
+
 Let's just say, for simplicity's sake, that any snippet of JavaScript has to be compiled before (usually *right* before!) it's executed. So, the JS compiler will take the program `var a = 2;` and compile it *first*, and then be ready to execute it, usually right away.
+
+为了简单起见,我们可以说,任何一小段JavaScript执行之前(通常是非常快的)都被编译了。所以，JS编译器会把代码`var a = 2;`首先编译好,然后准备执行,通常是立即执行了。
+
+
 
 ## Understanding Scope
 
+## 理解作用域
+
 The way we will approach learning about scope is to think of the process in terms of a conversation. But, *who* is having the conversation?
+
+我们学习作用域的方式是把过程想象成是一种对话的表达方式。但是,谁在对话呢?
 
 ### The Cast
 
+### 演员表
+
 Let's meet the cast of characters that interact to process the program `var a = 2;`, so we understand their conversations that we'll listen in on shortly:
+
+现在让我们认识一下处理程序`var a = 2;`过程中的几个重要演员,这样我们就可以理解他们接下来马上要进行的对话了。
 
 1. *Engine*: responsible for start-to-finish compilation and execution of our JavaScript program.
 
+1. *引擎*:负责从头到尾的编译和执行我们的JavaScript程序。
+
 2. *Compiler*: one of *Engine*'s friends; handles all the dirty work of parsing and code-generation (see previous section).
+
+2. *编译器*：引擎的朋友;负责语法分析和生成代码中(见之前的段落)的所有脏活累活
 
 3. *Scope*: another friend of *Engine*; collects and maintains a look-up list of all the declared identifiers (variables), and enforces a strict set of rules as to how these are accessible to currently executing code.
 
+3. *作用域*: 引擎的另外一位朋友；收集和维护已申明标识符(变量)的列表,然后为当前正在执行的代码强行制定一个严格的规则来规定它们(标识符列表)哪些是可访问的。
+
 For you to *fully understand* how JavaScript works, you need to begin to *think* like *Engine* (and friends) think, ask the questions they ask, and answer those questions the same.
+
+为了让你*全面理解*JavaScript是如何工作的,你需要开始*想*引擎(和他的朋友)所想,问引擎所问,然后像引擎一样去回答。
 
 ### Back & Forth
 
+### 前前后后
+
 When you see the program `var a = 2;`, you most likely think of that as one statement. But that's not how our new friend *Engine* sees it. In fact, *Engine* sees two distinct statements, one which *Compiler* will handle during compilation, and one which *Engine* will handle during execution.
+
+当你看到程序`var a = 2;`,你大概会想这是一个声明。但是这不是我们新朋友*引擎*看到的。事实上,引擎看到两个有区别的表达式.一个是*编译器*在编译期间会处理的,一个是*引擎*在执行期间会处理的。
 
 So, let's break down how *Engine* and friends will approach the program `var a = 2;`.
 
+好让我们把*引擎*和他朋友如何处理程序`var a = 2;`的过程划分来看。
+
 The first thing *Compiler* will do with this program is perform lexing to break it down into tokens, which it will then parse into a tree. But when *Compiler* gets to code-generation, it will treat this program somewhat differently than perhaps assumed.
+
+首先在这段代码上要做的事是*编译器*会对它进行词法分析把他拆分到每个部分中去,之后会被分析到树种去。但是当*编译器*到代码生成的阶段,它会以某种和假定方式不同的方式来对待这段程序。
 
 A reasonable assumption would be that *Compiler* will produce code that could be summed up by this pseudo-code: "Allocate memory for a variable, label it `a`, then stick the value `2` into that variable." Unfortunately, that's not quite accurate.
 
+*编译器*会如何处理代码的一个合理假设可以用一段伪代码来概括:"给变量分配内存,标记为`a`,然后把值`2`插入到变量中."不幸的是,这并不准确。
+
 *Compiler* will instead proceed as:
+
+编译器其实会经过下面几个过程:
 
 1. Encountering `var a`, *Compiler* asks *Scope* to see if a variable `a` already exists for that particular scope collection. If so, *Compiler* ignores this declaration and moves on. Otherwise, *Compiler* asks *Scope* to declare a new variable called `a` for that scope collection.
 
+1. 遭遇 `var a`,编译器告诉作用域去看一下变量 `a`是否已经存在于特指的作用域集合中。如果存在,编译器会忽略这个申明然后继续往下。否则的话,编译器会告诉作用域在作用域的的集合中声明一个新的变量叫做`a`。
+
 2. *Compiler* then produces code for *Engine* to later execute, to handle the `a = 2` assignment. The code *Engine* runs will first ask *Scope* if there is a variable called `a` accessible in the current scope collection. If so, *Engine* uses that variable. If not, *Engine* looks *elsewhere* (see nested *Scope* section below).
+
+2.编译器然后为引擎接下的执行生成代码,处理`a = 2`表达式。代码引擎启动会首先告诉作用域查看是否有可访问的变量叫做 `a`存在于当前订单作用域集合列表中。如果存在引擎会使用这个变量。如果不存在,引擎会查看*其它地方*(见接下来的嵌套*作用域*)。
 
 If *Engine* eventually finds a variable, it assigns the value `2` to it. If not, *Engine* will raise its hand and yell out an error!
 
+如果引擎最终找到了变量,他会分配值 `2`给他。如果没有,引擎会举起手然后大声的喊出一个错误。
+
 To summarize: two distinct actions are taken for a variable assignment: First, *Compiler* declares a variable (if not previously declared in the current scope), and second, when executing, *Engine* looks up the variable in *Scope* and assigns to it, if found.
 
+总结一下:两个有区别的操作来处理一个分配变量:首先,编译器会声明变量(如果之前没有在当前的作用域中声明过的话)，然后第二步,会开始执行,引擎会在作用域中查找变量然后分配值,找得到的前提下。
+
 ### Compiler Speak
+### 编译器说
 
 We need a little bit more compiler terminology to proceed further with understanding.
 
+为了更远的过程我们需要了解一些编译器的专业术语。
+
 When *Engine* executes the code that *Compiler* produced for step (2), it has to look-up the variable `a` to see if it has been declared, and this look-up is consulting *Scope*. But the type of look-up *Engine* performs affects the outcome of the look-up.
+
+当引擎执行编译器在第二步生成的代码时,他会查看变量`a` 如果他已经背声明了,这次查看是咨询作用域的。但是引擎的处理查询类型会影响查询的结果。
 
 In our case, it is said that *Engine* would be performing an "LHS" look-up for the variable `a`. The other type of look-up is called "RHS".
 
+在我们的例子中,我们说引擎会执行一个"LHS"查询变量 `a`.另外一个类型的查询叫做"RHS"。
+
 I bet you can guess what the "L" and "R" mean. These terms stand for "Left-hand Side" and "Right-hand Side".
+
+我打赌你已经猜到了"L"和"R"的意思。他们分别代表了"Left-hand Side"(左边) 和 "Right-hand Side"(右边边).
 
 Side... of what? **Of an assignment operation.**
 
+边... 哪个边? **就是赋值操作** (赋值操作的左边和右边)
+
 In other words, an LHS look-up is done when a variable appears on the left-hand side of an assignment operation, and an RHS look-up is done when a variable appears on the right-hand side of an assignment operation.
+
+换句话来说,LHS查询是当变量出现在赋值操作的左边,RHS查询是当变量出现在赋值操作的右边。
 
 Actually, let's be a little more precise. An RHS look-up is indistinguishable, for our purposes, from simply a look-up of the value of some variable, whereas the LHS look-up is trying to find the variable container itself, so that it can assign. In this way, RHS doesn't *really* mean "right-hand side of an assignment" per se, it just, more accurately, means "not left-hand side".
 
+让我们来描述的更准确一点。对我们的意图来说,RHS查询是不易察觉的,他是简单的查询一个变量的值,然而LHS查询是尝试找到变量去装载他自己,然后进行赋值。在这种情况下,RHS不是真正意义上我们之前提到的的“右边赋值(right-hand side of an assignment)”,更准确来说,他的意思是"不是左边(not left-hand side)"。
+
 Being slightly glib for a moment, you could also think "RHS" instead means "retrieve his/her source (value)", implying that RHS means "go get the value of...".
+
+在这番油腔滑调之后,你也可以认为"RHS"是"retrieve his/her source (value)"的简写,暗示着"去获得....的值"。
 
 Let's dig into that deeper.
 
+让我们更深入一点。
+
 When I say:
+
+当我说:
 
 ```js
 console.log( a );
