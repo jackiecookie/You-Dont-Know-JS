@@ -212,7 +212,11 @@ console.log( a );
 
 The reference to `a` is an RHS reference, because nothing is being assigned to `a` here. Instead, we're looking-up to retrieve the value of `a`, so that the value can be passed to `console.log(..)`.
 
+对`a`的引用是一个RHS引用,因为没有给`a`赋值。相反的,他只是取得 `a`的值,然后这个值就可以被传入`console.log(..)`中。
+
 By contrast:
+
+相比之下
 
 ```js
 a = 2;
@@ -220,9 +224,15 @@ a = 2;
 
 The reference to `a` here is an LHS reference, because we don't actually care what the current value is, we simply want to find the variable as a target for the `= 2` assignment operation.
 
+这里对 `a`的引用是一个LHS引用,因为我们并不真正关心当前的值,我们简单的想找到变量作为目标进行`= 2` 的赋值操作。
+
 **Note:** LHS and RHS meaning "left/right-hand side of an assignment" doesn't necessarily literally mean "left/right side of the `=` assignment operator". There are several other ways that assignments happen, and so it's better to conceptually think about it as: "who's the target of the assignment (LHS)" and "who's the source of the assignment (RHS)".
 
+**注意** LHS和RHS的意思"赋值的左边和右边"并不是必须像字面意思"`=`赋值操作的左边和右边"这样理解。
+
 Consider this program, which has both LHS and RHS references:
+
+考虑一下这个程序,哪个即使LHS引用又是RHS引用:
 
 ```js
 function foo(a) {
@@ -234,19 +244,35 @@ foo( 2 );
 
 The last line that invokes `foo(..)` as a function call requires an RHS reference to `foo`, meaning, "go look-up the value of `foo`, and give it to me." Moreover, `(..)` means the value of `foo` should be executed, so it'd better actually be a function!
 
+最后一行执行`foo(..)`作为一个方法调用为 `foo`执行了一个RHS引用,意思是,"去看一下`foo`的值,然后把值给我。"此外，`(..)`意味着`foo`的值是执行之后的，所以它最好实际上是一个方法。
+
 There's a subtle but important assignment here. **Did you spot it?**
+
+这里有一个不易察觉但是很重要的赋值。**你注意到了么?**
 
 You may have missed the implied `a = 2` in this code snippet. It happens when the value `2` is passed as an argument to the `foo(..)` function, in which case the `2` value is **assigned** to the parameter `a`. To (implicitly) assign to parameter `a`, an LHS look-up is performed.
 
+你也许忽略了暗示着 `a = 2`的这小段代码。他发生在当值`2`作为参数传入到`foo(..)`这个方法中,在这种情况下`2` 这个值**被赋值**给了参数 `a`。给(暗示的)`a`参数赋值,一个LHS查看就被执行了
+
 There's also an RHS reference for the value of `a`, and that resulting value is passed to `console.log(..)`. `console.log(..)` needs a reference to execute. It's an RHS look-up for the `console` object, then a property-resolution occurs to see if it has a method called `log`.
+
+他们也做了RHS引用来获取 `a`的值,然后将结果传入到 `console.log(..)`。 `console.log(..)`需要一个引用来执行。这里对`console`进行一个RHS查看.然后属性解析被执行来查看是否有一个方法叫做`log`。
 
 Finally, we can conceptualize that there's an LHS/RHS exchange of passing the value `2` (by way of variable `a`'s RHS look-up) into `log(..)`. Inside of the native implementation of `log(..)`, we can assume it has parameters, the first of which (perhaps called `arg1`) has an LHS reference look-up, before assigning `2` to it.
 
+最后,我们可以将概念化,这里有一个LHS/RHS交换将`2`(顺便说一下`a`变量是一个RHS查看)的值传入到`log(..)`中。在原生方法`log(..)`里面,我们可以假设他有参数,第一个参数(或许叫做`arg1`)发生了一个LHS引用查询将`2`赋值给了它。
+
 **Note:** You might be tempted to conceptualize the function declaration `function foo(a) {...` as a normal variable declaration and assignment, such as `var foo` and `foo = function(a){...`. In so doing, it would be tempting to think of this function declaration as involving an LHS look-up.
+
+**注意:** 你可能被诱导将这里的方法声明`function foo(a) {...`认为是普通的变量声明和赋值,就像`var foo`和`foo = function(a){...`那样，这可能会诱使你觉得方法声明是涉及了一次LHS查看。
 
 However, the subtle but important difference is that *Compiler* handles both the declaration and the value definition during code-generation, such that when *Engine* is executing code, there's no processing necessary to "assign" a function value to `foo`. Thus, it's not really appropriate to think of a function declaration as an LHS look-up assignment in the way we're discussing them here.
 
+然而,很微妙但是很重要的区别就是*编译器*同时处理代码生成阶段值的声明和的定义,当*引擎*是执行代码,没有过程必须要将方法值"赋值"给 `foo`。因此，在我们这里的讨论将方法声明当做是一次LHS赋值查看不太合适。
+
 ### Engine/Scope Conversation
+
+### 引擎/作用域 交谈
 
 ```js
 function foo(a) {
@@ -258,35 +284,65 @@ foo( 2 );
 
 Let's imagine the above exchange (which processes this code snippet) as a conversation. The conversation would go a little something like this:
 
+让我们想象一下将交换(这小段代码的过程)看做是一场交谈。这段交谈会像下面一样展开：
+
 > ***Engine***: Hey *Scope*, I have an RHS reference for `foo`. Ever heard of it?
+
+> ***引擎***: Hey *作用域*, 我要为`foo`做一次RHS引用,你听说过他么?
 
 > ***Scope***: Why yes, I have. *Compiler* declared it just a second ago. He's a function. Here you go.
 
+> ***作用域***: 怎么了 是的, 我这里有. *编译器* 刚刚声明了. 它是一个方法. 给你吧.
+
 > ***Engine***: Great, thanks! OK, I'm executing `foo`.
+
+> ***Engine***: 太好了, 谢谢! OK, 我正在执行 `foo`了.
 
 > ***Engine***: Hey, *Scope*, I've got an LHS reference for `a`, ever heard of it?
 
+> ***引擎***: Hey, *作用域*, 我要为`a`做一次LHS引用, 你听说过他么?
+
 > ***Scope***: Why yes, I have. *Compiler* declared it as a formal parameter to `foo` just recently. Here you go.
+
+> ***作用域***: 怎么了 是的,我又. *编译器* 刚刚申明了它作为`foo`的参数。拿去吧。
 
 > ***Engine***: Helpful as always, *Scope*. Thanks again. Now, time to assign `2` to `a`.
 
+> ***引擎***: 你一直那么乐于助人, *作用域*. 再次感谢. 现在是把 `2`赋值给`a`.
+
 > ***Engine***: Hey, *Scope*, sorry to bother you again. I need an RHS look-up for `console`. Ever heard of it?
+
+> ***引擎***: Hey, *作用域*, 抱歉又打扰你。我需要为`console`做一次RHS查看。你听说过他么？
 
 > ***Scope***: No problem, *Engine*, this is what I do all day. Yes, I've got `console`. He's built-in. Here ya go.
 
+> ***作用域***: 没问题, *Engine*, 我是我整天都在干的事情。是的,我这里有`console`。他是构建好的.给你吧。
+
 > ***Engine***: Perfect. Looking up `log(..)`. OK, great, it's a function.
+
+> ***引擎***: 太棒了. 查看一下 `log(..)`. OK, 好极了, 他是一个方法.
 
 > ***Engine***: Yo, *Scope*. Can you help me out with an RHS reference to `a`. I think I remember it, but just want to double-check.
 
+> ***引擎***: Yo, *作用域*. 可以帮我取出`a`我要为他做一次RHS引用. 我想我记得他,但是我想要在确认一下。
+
 > ***Scope***: You're right, *Engine*. Same guy, hasn't changed. Here ya go.
 
+> ***作用域***: 你说的没错, *引擎*. 还是他, 没变. 给你吧.
+
 > ***Engine***: Cool. Passing the value of `a`, which is `2`, into `log(..)`.
+
+> ***Engine***: Cool. 把值 `2`给`a`, 传入到 `log(..)`中去.
 
 > ...
 
 ### Quiz
 
+### 小测验
+
 Check your understanding so far. Make sure to play the part of *Engine* and have a "conversation" with the *Scope*:
+
+检查一下你是否理解了。确保你在扮演*Engine*然后和*作用域*：
 
 ```js
 function foo(a) {
@@ -299,17 +355,31 @@ var c = foo( 2 );
 
 1. Identify all the LHS look-ups (there are 3!).
 
+1. 找出所有所有的LHS查看(总共有3个!)。
+
 2. Identify all the RHS look-ups (there are 4!).
+
+2. 找出所有订单RHS查看(总共有4个!)。
 
 **Note:** See the chapter review for the quiz answers!
 
+**注意:** 答案见章节回顾！
+
 ## Nested Scope
+
+## 嵌套作用域
 
 We said that *Scope* is a set of rules for looking up variables by their identifier name. There's usually more than one *Scope* to consider, however.
 
+我们说*作用域*是设置一个规则根据识别的名称来找寻变量。然而经常有超过一个*作用域*我们需要考虑。
+
 Just as a block or function is nested inside another block or function, scopes are nested inside other scopes. So, if a variable cannot be found in the immediate scope, *Engine* consults the next outer containing scope, continuing until found or until the outermost (aka, global) scope has been reached.
 
+就像块或者方法可以被嵌套在另外一个块或者方法中,作用域也是嵌套被嵌套在其他作用域里的。所以,如果变量不能再当前作用域中被找到，引擎会咨询包含他的下一个作用域,一直到找到或者到达最外层(全局)的作用域为止。
+
 Consider:
+
+仔细考虑:
 
 ```js
 function foo(a) {
@@ -323,17 +393,31 @@ foo( 2 ); // 4
 
 The RHS reference for `b` cannot be resolved inside the function `foo`, but it can be resolved in the *Scope* surrounding it (in this case, the global).
 
+这个为 `b`做的RHS引用不能再方法`foo`中被解决,但是可以在包围他的作用域中被解决(在这个例子中是全局)。
+
 So, revisiting the conversations between *Engine* and *Scope*, we'd overhear:
+
+所以,在看一下引擎和作用域的对话,我们会听到:
 
 > ***Engine***: "Hey, *Scope* of `foo`, ever heard of `b`? Got an RHS reference for it."
 
+> ***引擎***: "Hey, `foo`*作用域*, 你听说过 `b` 么? 我要给他做一次RHS引用。"
+
 > ***Scope***: "Nope, never heard of it. Go fish."
+
+> ***作用域***: "没有, 从没听过. 去找别人吧."
 
 > ***Engine***: "Hey, *Scope* outside of `foo`, oh you're the global *Scope*, ok cool. Ever heard of `b`? Got an RHS reference for it."
 
+> ***引擎***: "Hey, `foo`外层的 *作用域*, 噢 你是全局 *作用域*. 听说过 `b` 么? 我要给他做一次RHS引用。"
+
 > ***Scope***: "Yep, sure have. Here ya go."
 
+> ***作用域***: "是的, 当然有. 拿去吧."
+
 The simple rules for traversing nested *Scope*: *Engine* starts at the currently executing *Scope*, looks for the variable there, then if not found, keeps going up one level, and so on. If the outermost global scope is reached, the search stops, whether it finds the variable or not.
+
+横穿嵌套*作用域*的简单规则:引擎从当前正在执行的作用域开始查找变量,如果没有找到,继续往上一层找,然后一直下去。如果到达最外层的全局作用域,不管有没有找到这次搜索结束。
 
 ### Building on Metaphors
 
