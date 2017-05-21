@@ -421,21 +421,37 @@ The simple rules for traversing nested *Scope*: *Engine* starts at the currently
 
 ### Building on Metaphors
 
+### 建筑比喻
+
 To visualize the process of nested *Scope* resolution, I want you to think of this tall building.
+
+为了使嵌套作用域的解决形成思维图像,我想你能思考一下这个高的建筑。
 
 <img src="fig1.png" width="250">
 
 The building represents our program's nested *Scope* rule set. The first floor of the building represents your currently executing *Scope*, wherever you are. The top level of the building is the global *Scope*.
 
+这个建筑代表我们程序的嵌套作用域设置规则。不论你在什么位置,建筑物的第一层代表我们当前执行的作用域。建筑物的最高层就是全局作用域。
+
 You resolve LHS and RHS references by looking on your current floor, and if you don't find it, taking the elevator to the next floor, looking there, then the next, and so on. Once you get to the top floor (the global *Scope*), you either find what you're looking for, or you don't. But you have to stop regardless.
+
+通过观察你的当前楼层来解决你的LHS和RHS引用，如果你没有找到,乘坐电梯到下一层,看看那边,然后一层层往上找。一旦当你到达顶层(全局作用域),可能你已经找到你想找的,又或者没有找到。但是不管怎么样你都得停下来。
 
 ## Errors
 
+## 错误
+
 Why does it matter whether we call it LHS or RHS?
+
+为什么分清LHS或者RHS很重要?
 
 Because these two types of look-ups behave differently in the circumstance where the variable has not yet been declared (is not found in any consulted *Scope*).
 
+因为这两个类型的查找在当变量没有在环境中声明的情况下(没有在任何一个被咨询的作用中找到)有着不一样的表现。
+
 Consider:
+
+考虑一下
 
 ```js
 function foo(a) {
@@ -448,17 +464,32 @@ foo( 2 );
 
 When the RHS look-up occurs for `b` the first time, it will not be found. This is said to be an "undeclared" variable, because it is not found in the scope.
 
+当一开始对`b`执行RHS查找,它将会找不到。这被叫做一个"未声明"的变量,因为作用域中不能被找到。
+
 If an RHS look-up fails to ever find a variable, anywhere in the nested *Scope*s, this results in a `ReferenceError` being thrown by the *Engine*. It's important to note that the error is of the type `ReferenceError`.
 
-By contrast, if the *Engine* is performing an LHS look-up and arrives at the top floor (global *Scope*) without finding it, and if the program is not running in "Strict Mode" [^note-strictmode], then the global *Scope* will create a new variable of that name **in the global scope**, and hand it back to *Engine*.
+如果对一个变量进行RHS查找,不论哪个嵌套作用中都找不到，*引擎*会抛出一个'引用错误（ReferenceError）'的结果。注意这个错误是一个类型为'引用错误（ReferenceError）'这很重要。
+
+By contrast, if the *Engine* is performing an LHS look-up and arrives at the top floor (global *Scope*) without finding it, and if the program is not running in "Strict Mode" [^note-strictmode], then the global *Scope* will create a new variable of that name **in the global scope**, and hand it back to *Engine*
+
+相比之下,如果*Engine*执行一个LHS查找然后一直到达顶层(全局作用域)都没有找到,如果程序不是运行在"严格模式(Strict Mode)"[^note-strictmode]下,这样全局作用域就会在全局作用域里用这个名字创建一个新的变量,然后把执行权交还给引擎。
 
 *"No, there wasn't one before, but I was helpful and created one for you."*
 
+"不，这个之前没有,但是我会帮忙替你创造一个。"
+
 "Strict Mode" [^note-strictmode], which was added in ES5, has a number of different behaviors from normal/relaxed/lazy mode. One such behavior is that it disallows the automatic/implicit global variable creation. In that case, there would be no global *Scope*'d variable to hand back from an LHS look-up, and *Engine* would throw a `ReferenceError` similarly to the RHS case.
+
+"严格模式(Strict Mode)"[^note-strictmode],在ES5中新增,和普通/宽松/懒惰模式有几个不同的行为。其中一个行为就是不允许 自动/不声明 的创建全局变量。在这种情况下,全局作用域的变量将不会交给LHS查看,然后引擎会抛出一个`引用错误(ReferenceError)`类似RHS的情况。
 
 Now, if a variable is found for an RHS look-up, but you try to do something with its value that is impossible, such as trying to execute-as-function a non-function value, or reference a property on a `null` or `undefined` value, then *Engine* throws a different kind of error, called a `TypeError`.
 
+现在,如果一个变量通过一个RHS查看找到,但是你尝试对他的值做一些做不到的事,类似尝试像调用方法一样调用一个不是方法的值,或者引用一个`null` 或者 `undefined`的值,然后引擎会抛出一个不一样的错误,叫做`TypeError(类型错误)`。
+
 `ReferenceError` is *Scope* resolution-failure related, whereas `TypeError` implies that *Scope* resolution was successful, but that there was an illegal/impossible action attempted against the result.
+
+`ReferenceError(引用错误)`作用域解决失败有关,然而`TypeError`暗示着作用域解决成功,但是尝试对结果做 不合法/不可能 的操作。
+
 
 ## Review (TL;DR)
 
