@@ -493,21 +493,39 @@ Now, if a variable is found for an RHS look-up, but you try to do something with
 
 ## Review (TL;DR)
 
+## 回顾
+
 Scope is the set of rules that determines where and how a variable (identifier) can be looked-up. This look-up may be for the purposes of assigning to the variable, which is an LHS (left-hand-side) reference, or it may be for the purposes of retrieving its value, which is an RHS (right-hand-side) reference.
+
+作用域是设置一个规则来查明在哪里和如何查看一个变量(鉴别器)。查看可能是以给变量赋值为目的,这个就是LHS(左手(left-hand-side))引用,或者是以获得值为目的,这个就是RHS(右边(right-hand-side))引用。
 
 LHS references result from assignment operations. *Scope*-related assignments can occur either with the `=` operator or by passing arguments to (assign to) function parameters.
 
+LHS引用从赋值操作获得结果。作用域相关的赋值操作可能会在`=`操作符或者传入(赋值)给方法的参数中发生。
+
 The JavaScript *Engine* first compiles code before it executes, and in so doing, it splits up statements like `var a = 2;` into two separate steps:
+
+JavaScript引擎会在执行代码前首次编译代码，因此，他会把`var a = 2;`进行拆分进行两个不同的步骤:
 
 1. First, `var a` to declare it in that *Scope*. This is performed at the beginning, before code execution.
 
+1. 首先,`var a`会在他的作用域中声明。这个会代码执行前在一开始就被执行。
+
 2. Later, `a = 2` to look up the variable (LHS reference) and assign to it if found.
+
+2. 然后, `a = 2` 查看变量如果存在的话(LHS引用)然后赋值。
 
 Both LHS and RHS reference look-ups start at the currently executing *Scope*, and if need be (that is, they don't find what they're looking for there), they work their way up the nested *Scope*, one scope (floor) at a time, looking for the identifier, until they get to the global (top floor) and stop, and either find it, or don't.
 
+LHS和RHS引用都是从当前执行的作用域开始查找,然后如果需要等待话(他们没有在那个作用域中找到他们想要的东西),他们会继续在嵌套的作用域中查找,一次只在一个作用域(层)找,不论找到还是没找到,只要达到全局(最高层)就停止。
+
 Unfulfilled RHS references result in `ReferenceError`s being thrown. Unfulfilled LHS references result in an automatic, implicitly-created global of that name (if not in "Strict Mode" [^note-strictmode]), or a `ReferenceError` (if in "Strict Mode" [^note-strictmode]).
 
+未完成的RHS引用结果是抛出一个`ReferenceError`。未完成的LHS引用结果会自动,隐藏的用这个名字创建一个全局变量(如果不是严格模式下"Strict Mode" [^note-strictmode]),或者抛出`ReferenceError`(如果在严格模式下"Strict Mode" [^note-strictmode])。
+
 ### Quiz Answers
+
+### 测验答案
 
 ```js
 function foo(a) {
