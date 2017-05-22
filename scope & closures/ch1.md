@@ -521,7 +521,7 @@ LHS和RHS引用都是从当前执行的作用域开始查找,然后如果需要�
 
 Unfulfilled RHS references result in `ReferenceError`s being thrown. Unfulfilled LHS references result in an automatic, implicitly-created global of that name (if not in "Strict Mode" [^note-strictmode]), or a `ReferenceError` (if in "Strict Mode" [^note-strictmode]).
 
-未完成的RHS引用结果是抛出一个`ReferenceError`。未完成的LHS引用结果会自动,隐藏的用这个名字创建一个全局变量(如果不是严格模式下"Strict Mode" [^note-strictmode]),或者抛出`ReferenceError`(如果在严格模式下"Strict Mode" [^note-strictmode])。
+未成功的RHS引用结果是抛出一个`ReferenceError`。未成功的LHS引用结果会自动,隐藏的用这个名字创建一个全局变量(如果不是严格模式下"Strict Mode" [^note-strictmode]),或者抛出`ReferenceError`(如果在严格模式下"Strict Mode" [^note-strictmode])。
 
 ### Quiz Answers
 
