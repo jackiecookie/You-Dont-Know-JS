@@ -35,9 +35,11 @@ To define it somewhat circularly, lexical scope is scope that is defined at lexi
 
 **Note:** We will see in a little bit there are some ways to cheat lexical scope, thereby modifying it after the lexer has passed by, but these are frowned upon. It is considered best practice to treat lexical scope as, in fact, lexical-only, and thus entirely author-time in nature.
 
-**注意:** 我们会看到有些方法他们可以骗过词法作用域,借由此在词法分析器传进来之前修改他，但是这会显得很迷惑。事实上，这被认为是对待作用域最佳的实践是最好是在词法分析时间,也就是原始的整个编写的时间。
+**注意:** 我们会看到有些方法他们可以骗过词法作用域,借由此在词法分析器传进来之前修改他，但是这会显得很迷惑。事实上，被认为是对待作用域最佳的实践是最好是在词法分析时间,也就是原始的整个编写的时间。
 
 Let's consider this block of code:
+
+让我们来考虑一下这段代码：
 
 ```js
 function foo(a) {
@@ -55,6 +57,8 @@ foo( 2 ); // 2 4 12
 ```
 
 There are three nested scopes inherent in this code example. It may be helpful to think about these scopes as bubbles inside of each other.
+
+这里是三个被嵌套的固有的(inherent:that is a basic or permanent part of sb/sth and that cannot be removed 在这里我翻译做固有的结合前面的set in stone)作用域在这个代码例子中。把这些作用域想象成气泡存在于其他气泡中可能会对理解有帮助。
 
 <img src="fig2.png" width="500">
 
