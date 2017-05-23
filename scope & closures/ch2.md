@@ -1,21 +1,41 @@
 # You Don't Know JS: Scope & Closures
+
+# 你不知道的JS：作用域和闭包
 # Chapter 2: Lexical Scope
+
+#第二章：词法作用域
 
 In Chapter 1, we defined "scope" as the set of rules that govern how the *Engine* can look up a variable by its identifier name and find it, either in the current *Scope*, or in any of the *Nested Scopes* it's contained within.
 
+在第一章,我们把"作用域"定义为设置一个规则管理引擎如何根据定义好的变量名称找到他，不论是在当前的作用域,或者是任何一个他被包含着的嵌套作用域里。
+
 There are two predominant models for how scope works. The first of these is by far the most common, used by the vast majority of programming languages. It's called **Lexical Scope**, and we will examine it in-depth. The other model, which is still used by some languages (such as Bash scripting, some modes in Perl, etc.) is called **Dynamic Scope**.
+
+作用域如何工作主要有两个模型。第一个是目前为止最常见的,在大多数的编程语言中被使用。叫做**词法作用域**,然后我们接下来会更深入的调查。另外一种模型,在一些语言中仍然被使用(像Bash脚本,Perl中的一些模式,等等)叫做**动态作用域**。
 
 Dynamic Scope is covered in Appendix A. I mention it here only to provide a contrast with Lexical Scope, which is the scope model that JavaScript employs.
 
+动态作用域在附录A中介绍。我在这里提到它只是和词法作用域做一个对照，而词法作用域这种模型也是JavaScript使用的。
+
 ## Lex-time
+
+## 词法分析时间
 
 As we discussed in Chapter 1, the first traditional phase of a standard language compiler is called lexing (aka, tokenizing). If you recall, the lexing process examines a string of source code characters and assigns semantic meaning to the tokens as a result of some stateful parsing.
 
+就像我们在第一章里讨论过的,标准的语言编译器在第一个传统阶段叫做词法分析(又叫做分词)。如果你回想一下，词法分析的过程就是检查源代码字符组成的字符串然后根据词法的意义分词作为有状态的解析结果。
+
 It is this concept which provides the foundation to understand what lexical scope is and where the name comes from.
+
+这个观点提供了了解什么是词法作用域和这个名字是从哪里来的基础。
 
 To define it somewhat circularly, lexical scope is scope that is defined at lexing time. In other words, lexical scope is based on where variables and blocks of scope are authored, by you, at write time, and thus is (mostly) set in stone by the time the lexer processes your code.
 
+要定义它某种程度上有点绕，词法作用域是在词法分析时间定义的作用域。换句话来说，词法作用域是取决于你在写的时候以变量和作用域的块在哪里编写为依据，因此在分词器处理你代码的时候(基本上)是不变的。
+
 **Note:** We will see in a little bit there are some ways to cheat lexical scope, thereby modifying it after the lexer has passed by, but these are frowned upon. It is considered best practice to treat lexical scope as, in fact, lexical-only, and thus entirely author-time in nature.
+
+**注意:** 我们会看到有些方法他们可以骗过词法作用域,借由此在词法分析器传进来之前修改他，但是这会显得很迷惑。事实上，这被认为是对待作用域最佳的实践是最好是在词法分析时间,也就是原始的整个编写的时间。
 
 Let's consider this block of code:
 
