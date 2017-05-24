@@ -64,27 +64,49 @@ There are three nested scopes inherent in this code example. It may be helpful t
 
 **Bubble 1** encompasses the global scope, and has just one identifier in it: `foo`.
 
+**气泡 1** 包括在全局作用域,只有一个标识符在里面: `foo`。
+
 **Bubble 2** encompasses the scope of `foo`, which includes the three identifiers: `a`, `bar` and `b`.
+
+**气泡 2** 包括作用域`foo`,包含了3个标识符: `a`, `bar` and `b`。
 
 **Bubble 3** encompasses the scope of `bar`, and it includes just one identifier: `c`.
 
+**气泡 3** 包括作用域`bar`,它只包含了一个标识符: `c`。
+
 Scope bubbles are defined by where the blocks of scope are written, which one is nested inside the other, etc. In the next chapter, we'll discuss different units of scope, but for now, let's just assume that each function creates a new bubble of scope.
+
+作用域气泡是被定义在作用域区块书写的地方,一个嵌套一个，等等。在下一个章节中，我们会讨论不同的作用域单位，但是现在，我们只假设每个方法创建一个新的作用域气泡。
 
 The bubble for `bar` is entirely contained within the bubble for `foo`, because (and only because) that's where we chose to define the function `bar`.
 
+`bar`气泡被`foo`气泡完全的包含，因为(而且只因为)我们选择在哪里定义方法`bar`。
+
 Notice that these nested bubbles are strictly nested. We're not talking about Venn diagrams where the bubbles can cross boundaries. In other words, no bubble for some function can simultaneously exist (partially) inside two other outer scope bubbles, just as no function can partially be inside each of two parent functions.
+
+注意这里的嵌套气泡是严格嵌套的。我们讨论的不是气泡可以穿过边界的文氏图(Venn diagrams)。换句话来说,方法的气泡不能同时存在(部分)于两个其他的外层气泡中，就像没有方法可以部分存在于另外两个父级方法中。
 
 ### Look-ups
 
 The structure and relative placement of these scope bubbles fully explains to the *Engine* all the places it needs to look to find an identifier.
 
+这些作用域气泡的结构和对应的位置可以完全解释引擎查找标识符需要查找的所有地方。
+
 In the above code snippet, the *Engine* executes the `console.log(..)` statement and goes looking for the three referenced variables `a`, `b`, and `c`. It first starts with the innermost scope bubble, the scope of the `bar(..)` function. It won't find `a` there, so it goes up one level, out to the next nearest scope bubble, the scope of `foo(..)`. It finds `a` there, and so it uses that `a`. Same thing for `b`. But `c`, it does find inside of `bar(..)`.
+
+在上面的代码片段中，引擎执行`console.log(..)`表达式然后去查看三个引用变量`a`, `b`, 和 `c`。首先从最内层的作用域气泡开始，也就是`bar(..)`方法的作用域。在那里找不到`a`，所以它往上一层，来到上一个最近的作用域气泡，`foo(..)`的作用域。在那里找到了 `a`，然后就使用那个 `a`。查找`b`做了同样的事情。但是 `c`，在`bar(..)`中可以找到。
 
 Had there been a `c` both inside of `bar(..)` and inside of `foo(..)`, the `console.log(..)` statement would have found and used the one in `bar(..)`, never getting to the one in `foo(..)`.
 
+假设`c`同时存在于`bar(..)`和`foo(..)`中，`console.log(..)`表达式会找到和使用`bar(..)`中的一个,永远不会得到`foo(..)`中的。
+
 **Scope look-up stops once it finds the first match**. The same identifier name can be specified at multiple layers of nested scope, which is called "shadowing" (the inner identifier "shadows" the outer identifier). Regardless of shadowing, scope look-up always starts at the innermost scope being executed at the time, and works its way outward/upward until the first match, and stops.
 
+**作用域查找一旦找到第一个匹配的就会停止**。相同名字的标识符可以在嵌套作用域中的多个层中被声明，这个叫做"阴影"(内层的标识符会遮住外层的标识符)。不管有没有遮住(Regardless of:paying not attention;treating sth as not being important)，在执行的时候作用域总是从最内层的作用域开始查找,然后一直往外层/上层找知道第一次找到，然后停止
+
 **Note:** Global variables are also automatically properties of the global object (`window` in browsers, etc.), so it *is* possible to reference a global variable not directly by its lexical name, but instead indirectly as a property reference of the global object.
+
+**注意:** 全局变量始终是全局对象(浏览器中的`window`,等等。)的自动属性，所以不直接使用他的词法名字通过引用全局变量的属性直接饮用全局变量是可能的，
 
 ```js
 window.a
@@ -92,27 +114,51 @@ window.a
 
 This technique gives access to a global variable which would otherwise be inaccessible due to it being shadowed. However, non-global shadowed variables cannot be accessed.
 
+这个技巧使那些因为被遮蔽而无法访问的全局变量有了访问的途径。然而,非全局被遮蔽的变量的变量是不能访问的。
+
 No matter *where* a function is invoked from, or even *how* it is invoked, its lexical scope is **only** defined by where the function was declared.
+
+不管方法在 *哪里* 触发,或者甚至 *如何* 触发,他的词法作用域**只**跟方法在哪里被声明有关。
 
 The lexical scope look-up process *only* applies to first-class identifiers, such as the `a`, `b`, and `c`. If you had a reference to `foo.bar.baz` in a piece of code, the lexical scope look-up would apply to finding the `foo` identifier, but once it locates that variable, object property-access rules take over to resolve the `bar` and `baz` properties, respectively.
 
+词法作用查找过程*只*会查找一级分类标识符,像`a`, `b`, 和 `c`。如果有对`foo.bar.baz`这小段代码的引用，词法作用域会申请查找`foo`标识符，但是一旦找出这个变量，对象属性访问规则会分别解析 `bar`和`baz`属性。
+
 ## Cheating Lexical
+
+## 欺骗词法
 
 If lexical scope is defined only by where a function is declared, which is entirely an author-time decision, how could there possibly be a way to "modify" (aka, cheat) lexical scope at run-time?
 
+如果词法作用域的定义只跟方法在哪里声明有关，完全是书写的时候决定，那么如何在运行时间"修改"(欺骗)词法作用域？
+
 JavaScript has two such mechanisms. Both of them are equally frowned-upon in the wider community as bad practices to use in your code. But the typical arguments against them are often missing the most important point: **cheating lexical scope leads to poorer performance.**
 
+JavaScript有两种这样的机制。在你的代码中使用任何一种机制在大部分的社区中都被认为是不好的实践而且是不被推荐的。但是和有代表性的争论相反的是他们经常忽略了最重要的点:**欺骗词法作用域会带来更差的性能。**
+
 Before I explain the performance issue, though, let's look at how these two mechanisms work.
+
+在我解释这个性能问题之前,让我们来看一下这两种机制是如何工作的。
+
+### `eval`
 
 ### `eval`
 
 The `eval(..)` function in JavaScript takes a string as an argument, and treats the contents of the string as if it had actually been authored code at that point in the program. In other words, you can programmatically generate code inside of your authored code, and run the generated code as if it had been there at author time.
 
+`eval(..)`方法在JavaScript中需要一个字符串(string)作为参数，然后把字符串的内容当做真正书写在那个地方的代码一样对待。换句话来说，你可以按计划生成代码在你已经写好的代码里，然后执行生成代码好像他书写的时候就在那一样。
+
 Evaluating `eval(..)` (pun intended) in that light, it should be clear how `eval(..)` allows you to modify the lexical scope environment by cheating and pretending that author-time (aka, lexical) code was there all along.
+
+把`eval(..)`评估成这样，必须要清楚`eval(..)`如何允许你用欺骗的方式去修改词法作用域环境然后假装代码在书写时间(词法分析)就已经在那边很长时间了。
 
 On subsequent lines of code after an `eval(..)` has executed, the *Engine* will not "know" or "care" that the previous code in question was dynamically interpreted and thus modified the lexical scope environment. The *Engine* will simply perform its lexical scope look-ups as it always does.
 
+一个`eval(..)`执行后的按照顺序的代码,引擎会不"知道"或者不"关心"它之前的代码是否是动态解释的然后修改词法作用域环境。引擎仅仅使用词法作用域查看就像他始终干的一样。
+
 Consider the following code:
+
+考虑一下下面的代码：
 
 ```js
 function foo(str, a) {
