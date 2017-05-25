@@ -280,7 +280,11 @@ In this code example, two objects `o1` and `o2` are created. One has an `a` prop
 
 When we pass in `o1`, the `a = 2` assignment finds the property `o1.a` and assigns it the value `2`, as reflected in the subsequent `console.log(o1.a)` statement. However, when we pass in `o2`, since it does not have an `a` property, no such property is created, and `o2.a` remains `undefined`.
 
+当我们传入`o1`，`a = 2`赋值找到属性`o1.a`然后将他赋值`2`，然后在随后的 `console.log(o1.a)`表达式被显示。然而,当我们传入`o2`,之前它没有`a`属性,没有属性被创建,`o2.a`仍然是`undefined`。
+
 But then we note a peculiar side-effect, the fact that a global variable `a` was created by the `a = 2` assignment. How can this be?
+
+但是随后我们注意到一个怪异的副作用，全局变量 `a` 被`a = 2`赋值操作创建了。这是怎么回事？
 
 The `with` statement takes an object, one which has zero or more properties, and **treats that object as if *it* is a wholly separate lexical scope**, and thus the object's properties are treated as lexically defined identifiers in that "scope".
 
