@@ -173,13 +173,23 @@ foo( "var b = 3;", 1 ); // 1 3
 
 The string `"var b = 3;"` is treated, at the point of the `eval(..)` call, as code that was there all along. Because that code happens to declare a new variable `b`, it modifies the existing lexical scope of `foo(..)`. In fact, as mentioned above, this code actually creates variable `b` inside of `foo(..)` that shadows the `b` that was declared in the outer (global) scope.
 
+这里的字符串 `"var b = 3;"`在`eval(..)`调用的位置，当成是已经在那里很久的代码被处理。因为这个代码声明了一个新的变量 `b`，他修改已经存在的词法作用域`foo(..)`。事实上，我们上面提到的，这个代码事实上在 `foo(..)`里面新创建了变量 `b`遮住了在外层(全局)作用域中被声明的`b`。
+
 When the `console.log(..)` call occurs, it finds both `a` and `b` in the scope of `foo(..)`, and never finds the outer `b`. Thus, we print out "1 3" instead of "1 2" as would have normally been the case.
+
+当`console.log(..)`调用执行，他找到作用域`foo(..)`中同时存在`a` 和 `b`，然后就不会去寻找外层的 `b`了。因此，我们输出"1 3" 而不是通常情况下的"1 2"。
 
 **Note:** In this example, for simplicity's sake, the string of "code" we pass in was a fixed literal. But it could easily have been programmatically created by adding characters together based on your program's logic. `eval(..)` is usually used to execute dynamically created code, as dynamically evaluating essentially static code from a string literal would provide no real benefit to just authoring the code directly.
 
+**注意：** 在这个例子中，为了简单的缘故，我们传入的"代码"字符串是固定的字面量。但是也可以很简单的按照计划根据你的代码逻辑创建将字符组成到一起的代码。`eval(..)`通常用在执行动态创建的代码，因为动态解析完全从字符串字面量来的静态代码并不会比直接写代码带来真正的好处。
+
 By default, if a string of code that `eval(..)` executes contains one or more declarations (either variables or functions), this action modifies the existing lexical scope in which the `eval(..)` resides. Technically, `eval(..)` can be invoked "indirectly", through various tricks (beyond our discussion here), which causes it to instead execute in the context of the global scope, thus modifying it. But in either case, `eval(..)` can at runtime modify an author-time lexical scope.
 
+默认情况下,如果`eval(..)`执行的代码字符串包含一个或者多个声明(不论变量或者方法),这个操作会修改`eval(..)`所在的已存在的词法作用域。技术上来讲,`eval(..)`可以间接的被调用，通过各种各样的技巧(超出我们这里的讨论),使他在全局上下文里执行，然后修改他。但是在任何一种情况，`eval(..)`可以在运行时修改书写时决定的词法作用域。
+
 **Note:** `eval(..)` when used in a strict-mode program operates in its own lexical scope, which means declarations made inside of the `eval()` do not actually modify the enclosing scope.
+
+**注意:** 当`eval(..)`在严格模式中被使用操作它自己的词法作用域，这意味着`eval()`内部声明的变量不能真正修改包围的作用域。
 
 ```js
 function foo(str) {
@@ -193,17 +203,29 @@ foo( "var a = 2" );
 
 There are other facilities in JavaScript which amount to a very similar effect to `eval(..)`. `setTimeout(..)` and `setInterval(..)` *can* take a string for their respective first argument, the contents of which are `eval`uated as the code of a dynamically-generated function. This is old, legacy behavior and long-since deprecated. Don't do it!
 
+在JavaScript中还有其他的技巧可以做到和`eval(..)`非常相似的影响。`setTimeout(..)` 和 `setInterval(..)` *可以* 将字符串分别作为第一个参数，他的内容会被`eval`作为是动态生成的方法代码。这个是一个老的,传统的行为,早就不被赞成。所以别这么做。
+
 The `new Function(..)` function constructor similarly takes a string of code in its **last** argument to turn into a dynamically-generated function (the first argument(s), if any, are the named parameters for the new function). This function-constructor syntax is slightly safer than `eval(..)`, but it should still be avoided in your code.
 
+`new Function(..)`构造方法相似的在他的**最后**一个参数需要一个代码字符串然后转换成动态生成方法(如果存在前面的参数,会将他们作为参数传入到新的方法中去)。这个构造方法语法比`eval(..)`稍微安全一点,但是任然避免在你的代码中使用。
+
 The use-cases for dynamically generating code inside your program are incredibly rare, as the performance degradations are almost never worth the capability.
+
+在你的代码中动态生成代码的用例是极其罕见的,对性能的影响也让他的能力几乎没有任何价值。
 
 ### `with`
 
 The other frowned-upon (and now deprecated!) feature in JavaScript which cheats lexical scope is the `with` keyword. There are multiple valid ways that `with` can be explained, but I will choose here to explain it from the perspective of how it interacts with and affects lexical scope.
 
+另外一个让人疑惑(现在已经极不赞成)的在JavaScript中用于欺骗词法作用域的特性是 `with` 关键字。让`with`可以被解释有好几种有效的方式，但是我会选择用他是和词法作用域如何交流和如何影响词法作用域的角度来解释他。
+
 `with` is typically explained as a short-hand for making multiple property references against an object *without* repeating the object reference itself each time.
 
+`with`的通常的解释是对多属性引用的简写相反的引用对象就不用每次都重复对象。
+
 For example:
+
+举例来说：
 
 ```js
 var obj = {
@@ -226,6 +248,8 @@ with (obj) {
 ```
 
 However, there's much more going on here than just a convenient short-hand for object property access. Consider:
+
+然而，这里有更多的事发生了而不是仅仅方便了对对象的存取简写。考虑一下：
 
 ```js
 function foo(obj) {
