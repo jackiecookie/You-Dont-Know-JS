@@ -276,6 +276,8 @@ console.log( a ); // 2 -- Oops, leaked global!
 
 In this code example, two objects `o1` and `o2` are created. One has an `a` property, and the other does not. The `foo(..)` function takes an object reference `obj` as an argument, and calls `with (obj) { .. }` on the reference. Inside the `with` block, we make what appears to be a normal lexical reference to a variable `a`, an LHS reference in fact (see Chapter 1), to assign to it the value of `2`.
 
+在这个代码例子中，两个对象`o1` 和 `o2`被创建。一个对象有 `a` 属性，然后另外一个没有。方法 `foo(..)` 将对象`obj`引用作为他的参数，然后执行`with (obj) { .. }`对obj引用。在 `with` 段落中，我们使变量 `a`在一个似乎是平常的词法作用域中，但事实上是一个LHS引用(见第一章)，然后对它赋值为 `2`。
+
 When we pass in `o1`, the `a = 2` assignment finds the property `o1.a` and assigns it the value `2`, as reflected in the subsequent `console.log(o1.a)` statement. However, when we pass in `o2`, since it does not have an `a` property, no such property is created, and `o2.a` remains `undefined`.
 
 But then we note a peculiar side-effect, the fact that a global variable `a` was created by the `a = 2` assignment. How can this be?
