@@ -288,36 +288,73 @@ But then we note a peculiar side-effect, the fact that a global variable `a` was
 
 The `with` statement takes an object, one which has zero or more properties, and **treats that object as if *it* is a wholly separate lexical scope**, and thus the object's properties are treated as lexically defined identifiers in that "scope".
 
+`with`表达式得到一个对象，对象可能有0个或者多个属性，然后**对待那个对象为一个完全隔离的词法作用域**，因此对象的属性被当成标识符在那个"作用域"中被声明。
+
 **Note:** Even though a `with` block treats an object like a lexical scope, a normal `var` declaration inside that `with` block will not be scoped to that `with` block, but instead the containing function scope.
+
+**注意:** 即使一个`with`区块像词法作用域一样对待一个对象，在那个`with`区块的一个普通的`var`声明不会被认为是`with`区块的作用域,而是在包含他的方法作用域中。
 
 While the `eval(..)` function can modify existing lexical scope if it takes a string of code with one or more declarations in it, the `with` statement actually creates a **whole new lexical scope** out of thin air, from the object you pass to it.
 
+而如果一个代码字符串有一个或者多个声明`eval(..)`方法可以修改已经存在的词法作用域，事实上`with`表达式通过你传入的对象凭空创造了一个 **完全全新的词法作用域**。
+
 Understood in this way, the "scope" declared by the `with` statement when we passed in `o1` was `o1`, and that "scope" had an "identifier" in it which corresponds to the `o1.a` property. But when we used `o2` as the "scope", it had no such `a` "identifier" in it, and so the normal rules of LHS identifier look-up (see Chapter 1) occurred.
+
+了解了这种方式,"作用域"在当我们传入`o1`对象是被`with`表达式声明，那个"作用域"有一个"识别符"和`o1.a`属性相符合。但是当我们使用`o2`作为"作用域"，里面并没有`a`"标识符"，所以一个普通的LHS标识符引用(见第一章)被触发了。
 
 Neither the "scope" of `o2`, nor the scope of `foo(..)`, nor the global scope even, has an `a` identifier to be found, so when `a = 2` is executed, it results in the automatic-global being created (since we're in non-strict mode).
 
+不论是`o2`"作用域"，还是`foo(..)`作用域,甚至全局作用于中都没有找到`a`识别符，所以当`a = 2`被执行了，它导致一个自动的全局作用域被创建(前提我们在非严格模式下)。
+
 It is a strange sort of mind-bending thought to see `with` turning, at runtime, an object and its properties into a "scope" *with* "identifiers". But that is the clearest explanation I can give for the results we see.
+
+在运行时，一个对象和他的属性在"作用域"中 *作为* "标识符",这种`with`的运行机制可能有些奇怪。但是这已经是我能给出的对于我们看到的结果最清楚的解释。
 
 **Note:** In addition to being a bad idea to use, both `eval(..)` and `with` are affected (restricted) by Strict Mode. `with` is outright disallowed, whereas various forms of indirect or unsafe `eval(..)` are disallowed while retaining the core functionality.
 
+**注意:** 除了不建议使用以外,`eval(..)` 和 `with`在严格模式下都是受影响(受限)的。`with`是完全不被允许的，虽然保留了核心的功能但是各种形式直接或者不安全的`eval(..)`都是不被允许的。
+
 ### Performance
+
+
+### 效率
 
 Both `eval(..)` and `with` cheat the otherwise author-time defined lexical scope by modifying or creating new lexical scope at runtime.
 
+`eval(..)` 和 `with`都是在运行时通过修改或者创建新的词法作用域的方式欺骗其他书写时定义的词法作用域。
+
 So, what's the big deal, you ask? If they offer more sophisticated functionality and coding flexibility, aren't these *good* features? **No.**
+
+所以,你问这有什么大不了？如果他们能提供更复杂的功能性和代码的灵活性，他们不是 *很好* 的特性吗？ **不**
 
 The JavaScript *Engine* has a number of performance optimizations that it performs during the compilation phase. Some of these boil down to being able to essentially statically analyze the code as it lexes, and pre-determine where all the variable and function declarations are, so that it takes less effort to resolve identifiers during execution.
 
+JavaScript *引擎* 在执行编译阶段期间会诱几个效率的优化。其中的一些可以归结为让他们有能力从本质上根据词法对代码进行静态分析，提前查明变量和方法在哪里声明，所以在执行期间解析标识符就会更小的影响性能。
+
 But if the *Engine* finds an `eval(..)` or `with` in the code, it essentially has to *assume* that all its awareness of identifier location may be invalid, because it cannot know at lexing time exactly what code you may pass to `eval(..)` to modify the lexical scope, or the contents of the object you may pass to `with` to create a new lexical scope to be consulted.
+
+但是如果引擎从代码中发现`eval(..)` 和 `with`，他本质上会*认为*所有位置上的标识符可能是无效的，因为他无法准确的知道在词法分析时间你会将什么代码传入到`eval(..)`中从而改变词法作用域，或者你传入到`with`中的对象的内容会创建一个新的词法作用域用来被查询。
 
 In other words, in the pessimistic sense, most of those optimizations it *would* make are pointless if `eval(..)` or `with` are present, so it simply doesn't perform the optimizations *at all*.
 
+换句话来说,在悲观的情况下，如果`eval(..)`或者`with`出现大部分的优化都 *将* 会变的没有意义，所以索性就 *一点* 都不优化了。
+
 Your code will almost certainly tend to run slower simply by the fact that you include an `eval(..)` or `with` anywhere in the code. No matter how smart the *Engine* may be about trying to limit the side-effects of these pessimistic assumptions, **there's no getting around the fact that without the optimizations, code runs slower.**
+
+事实上不论你将`eval(..)`或者`with`包含在代码的任何地方，你的代码几乎肯定会变的运行缓慢。不论引擎多聪明也许它会试图限制悲观假设的影响，**在不优化性能的情况下,代码运行会变慢的这个事实是无法避免的。**
 
 ## Review (TL;DR)
 
+## 回顾(TL;DR)
+
 Lexical scope means that scope is defined by author-time decisions of where functions are declared. The lexing phase of compilation is essentially able to know where and how all identifiers are declared, and thus predict how they will be looked-up during execution.
+
+词法作用域的意思是作用域的定义在书写时方法在哪里声明决定。在编译的语法分析阶段实质上需要有能力知道所有的标识符在哪里和如何声明,从而决定在执行阶段会如何查看他们。
 
 Two mechanisms in JavaScript can "cheat" lexical scope: `eval(..)` and `with`. The former can modify existing lexical scope (at runtime) by evaluating a string of "code" which has one or more declarations in it. The latter essentially creates a whole new lexical scope (again, at runtime) by treating an object reference *as* a "scope" and that object's properties as scoped identifiers.
 
+有两种机制可以"欺骗"词法作用域:`eval(..)` 和 `with`。前者可以通过对有一个或者多个声明在里面的"代码"字符串进行求值从而修改已经存在的词法作用域(在运行时)。后者实质上是通过对一个对象引用*当做*一个"作用域"然后将对象的属性作为*作用域*的标识符来创建一个全新的词法作用域(在运行时)。
+
 The downside to these mechanisms is that it defeats the *Engine*'s ability to perform compile-time optimizations regarding scope look-up, because the *Engine* has to assume pessimistically that such optimizations will be invalid. Code *will* run slower as a result of using either feature. **Don't use them.**
+
+这些机制的缺点是他阻挠了引擎在执行编译时对作用域查找做的优化能力，因为引擎会悲观的假设所有的优化都会无效。不论你使用哪个特性结果都是代码*将会*运行的缓慢，**不要使用它们。**
