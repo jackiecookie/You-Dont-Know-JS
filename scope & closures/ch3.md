@@ -90,7 +90,11 @@ Why would "hiding" variables and functions be a useful technique?
 
 There's a variety of reasons motivating this scope-based hiding. They tend to arise from the software design principle "Principle of Least Privilege" [^note-leastprivilege], also sometimes called "Least Authority" or "Least Exposure". This principle states that in the design of software, such as the API for a module/object, you should expose only what is minimally necessary, and "hide" everything else.
 
+有各种各样的原因去鼓励作用域为基础的隐藏。这个设计来自于软件设计原则"最小特权原则"[^note-leastprivilege]，有时候也被叫做"最小权限"或者"最小暴露"。这个原则是软件设计的通常说法，用于模块/对象的API，你只能暴露需要的最小东西，然后将其他的都"隐藏"起来。
+
 This principle extends to the choice of which scope to contain variables and functions. If all variables and functions were in the global scope, they would of course be accessible to any nested scope. But this would violate the "Least..." principle in that you are (likely) exposing many variables or functions which you should otherwise keep private, as proper use of the code would discourage access to those variables/functions.
+
+这个原则延伸到选择哪个作用域来包含变量和方法。如果所有变量和方法在全局作用域中,他们当然可以被任何嵌套的作用域访问。但是这违反了"最小..."原则因为你会(大概)暴露多个你需要保持私有的变量或者方法，因为正确使用这些代码的方式是阻拦访问这些变量/方法。
 
 For example:
 
