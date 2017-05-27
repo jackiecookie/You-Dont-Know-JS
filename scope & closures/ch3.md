@@ -1,17 +1,32 @@
 # You Don't Know JS: Scope & Closures
 # Chapter 3: Function vs. Block Scope
 
+# 你不知道的JS:作用域和闭包
+# 第三章:方法 vs. 作用域块
+
 As we explored in Chapter 2, scope consists of a series of "bubbles" that each act as a container or bucket, in which identifiers (variables, functions) are declared. These bubbles nest neatly inside each other, and this nesting is defined at author-time.
+
+根据我们在第二章探讨的，作用域由一系列的"气泡"组成每个充当容器或者桶，内部有识别符(变量,方法)被声明。这些气泡有序的嵌套着其他气泡，这些嵌套关系在书写时间被定义。
 
 But what exactly makes a new bubble? Is it only the function? Can other structures in JavaScript create bubbles of scope?
 
+但是到底是什么创造了新的气泡？只是方法？是否有其他构造在JavaScript里可以创造作用域气泡？
+
 ## Scope From Functions
+
+## 方法作用域
 
 The most common answer to those questions is that JavaScript has function-based scope. That is, each function you declare creates a bubble for itself, but no other structures create their own scope bubbles. As we'll see in just a little bit, this is not quite true.
 
+对于这些问题最常见的回答是JavaScript是基于方法的作用域。就因为这样，每个你声明的方法就为他自己创建一个气泡，但是没有其他结构可以创建他们自己的作用域气泡。但是我们将马上会看到,这不是完全正确的。
+
 But first, let's explore function scope and its implications.
 
+但是首先,我们探索方法作用域和他的含义。
+
 Consider this code:
+
+考虑这段代码：
 
 ```js
 function foo(a) {
@@ -31,9 +46,15 @@ function foo(a) {
 
 In this snippet, the scope bubble for `foo(..)` includes identifiers `a`, `b`, `c` and `bar`. **It doesn't matter** *where* in the scope a declaration appears, the variable or function belongs to the containing scope bubble, regardless. We'll explore how exactly *that* works in the next chapter.
 
+在这个片段中,`foo(..)`气泡作用域包含了标识符`a`, `b`, `c` 和 `bar`。不管作用域在 *哪里* 出现声明**这都没关系**,变量或者方法属于包含他的作用域气泡。我们会在下一章探索 *那* 到底是如何工作的。
+
 `bar(..)` has its own scope bubble. So does the global scope, which has just one identifier attached to it: `foo`.
 
+`bar(..)`有他自己的作用域气泡。全局作用域也是如此,他只有一个标识符属于他：`foo`。
+
 Because `a`, `b`, `c`, and `bar` all belong to the scope bubble of `foo(..)`, they are not accessible outside of `foo(..)`. That is, the following code would all result in `ReferenceError` errors, as the identifiers are not available to the global scope:
+
+因为`a`, `b`, `c`和`bar`都属于作用域`foo(..)`，`foo(..)`外部是无法访问的。所以接下来的代码会都会抛出`ReferenceError(引用错误)`错误，因为标识符对于全局作用域是不可获得的：
 
 ```js
 bar(); // fails
@@ -43,17 +64,29 @@ console.log( a, b, c ); // all 3 fail
 
 However, all these identifiers (`a`, `b`, `c`, `foo`, and `bar`) are accessible *inside* of `foo(..)`, and indeed also available inside of `bar(..)` (assuming there are no shadow identifier declarations inside `bar(..)`).
 
+然而，所有的标识符(`a`, `b`, `c`, `foo`, 和 `bar`)在`foo(..)`里都是可以访问的，在`bar(..)`内部实际上也可以访问(假设在`bar(..)`内部没有遮蔽的识别符声明)。
+
 Function scope encourages the idea that all variables belong to the function, and can be used and reused throughout the entirety of the function (and indeed, accessible even to nested scopes). This design approach can be quite useful, and certainly can make full use of the "dynamic" nature of JavaScript variables to take on values of different types as needed.
 
+方法作用域鼓励的想法是(encourages:to persuade sb to do sth by making it easier for them and making them believe it is a good thing to do)所有的变量属于方法，变量可以贯穿整个方法使用和重用(事实上,在被嵌套的方法中也可以访问)。整个设计将会变得十分有用，肯定可以充分利用"动态"原始JavaScript变量来根据不同的需要的类型获取值。
+
 On the other hand, if you don't take careful precautions, variables existing across the entirety of a scope can lead to some unexpected pitfalls.
+
+其他方面来说，如果你不做预防，变量穿过这个变量会带来不可估计的陷阱。
 
 ## Hiding In Plain Scope
 
 The traditional way of thinking about functions is that you declare a function, and then add code inside it. But the inverse thinking is equally powerful and useful: take any arbitrary section of code you've written, and wrap a function declaration around it, which in effect "hides" the code.
 
+对方法传统的看法是声明一个方法，然后在里面加代码。但是相反的现在的看法趋向有力和有用:取任意部分你写的代码，然后声明一个方法把它包起来，有效的把代码"隐藏"起来。
+
 The practical result is to create a scope bubble around the code in question, which means that any declarations (variable or function) in that code will now be tied to the scope of the new wrapping function, rather than the previously enclosing scope. In other words, you can "hide" variables and functions by enclosing them in the scope of a function.
 
+其实际结果是在代码周围创建了一个作用域气泡，意思是方法中任何的声明(方法或者变量)将会被新包围的方法的作用域约束，也不是先前包围的作用域。换句话来说，你可以将变量和方法用方法的作用域包围"藏"起来。
+
 Why would "hiding" variables and functions be a useful technique?
+
+为什么"隐藏"变量和方法会是有用的技巧？
 
 There's a variety of reasons motivating this scope-based hiding. They tend to arise from the software design principle "Principle of Least Privilege" [^note-leastprivilege], also sometimes called "Least Authority" or "Least Exposure". This principle states that in the design of software, such as the API for a module/object, you should expose only what is minimally necessary, and "hide" everything else.
 
