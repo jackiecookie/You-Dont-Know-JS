@@ -98,6 +98,8 @@ This principle extends to the choice of which scope to contain variables and fun
 
 For example:
 
+举个例子:
+
 ```js
 function doSomething(a) {
 	b = a + doSomethingElse( a * 2 );
@@ -116,7 +118,11 @@ doSomething( 2 ); // 15
 
 In this snippet, the `b` variable and the `doSomethingElse(..)` function are likely "private" details of how `doSomething(..)` does its job. Giving the enclosing scope "access" to `b` and `doSomethingElse(..)` is not only unnecessary but also possibly "dangerous", in that they may be used in unexpected ways, intentionally or not, and this may violate pre-condition assumptions of `doSomething(..)`.
 
+在这段片段里,变量`b`和方法`doSomethingElse(..)`就好像`doSomething(..)`的"私有"细节。给包围他的作用域“存取” `b`和`doSomethingElse(..)`不仅仅是多余的而且可能是"危险"的,可能通过一些出乎意料的方式，故意的或者又不是,这可能违反了 `doSomething(..)`提前设定的责任。
+
 A more "proper" design would hide these private details inside the scope of `doSomething(..)`, such as:
+
+一个更"恰当"的设计会是隐藏`doSomething(..)`作用域的这些私有细节,类似：
 
 ```js
 function doSomething(a) {
@@ -136,11 +142,17 @@ doSomething( 2 ); // 15
 
 Now, `b` and `doSomethingElse(..)` are not accessible to any outside influence, instead controlled only by `doSomething(..)`. The functionality and end-result has not been affected, but the design keeps private details private, which is usually considered better software.
 
+现在,`b` 和 `doSomethingElse(..)`将不受任何外部的影响不可读取,相反的只受`doSomething(..)`的控制。方法和最后的结果将不被受影响,设计为保持私有细节为私有,这通常被认为是更好的软件设计。
+
 ### Collision Avoidance
 
 Another benefit of "hiding" variables and functions inside a scope is to avoid unintended collision between two different identifiers with the same name but different intended usages. Collision results often in unexpected overwriting of values.
 
+把变量和方法放在作用域里隐藏的另外一个好处是避免两个不同的标识符有相同的名字但是不同的用法的无意间的冲突。冲突结果经常是出乎意料的覆盖重写了值。
+
 For example:
+
+举个例子：
 
 ```js
 function foo() {
@@ -159,7 +171,11 @@ foo();
 
 The `i = 3` assignment inside of `bar(..)` overwrites, unexpectedly, the `i` that was declared in `foo(..)` at the for-loop. In this case, it will result in an infinite loop, because `i` is set to a fixed value of `3` and that will forever remain `< 10`.
 
+`i`在`foo(..)`中被声明并且循环,出乎意料的,`bar(..)`内部的`i = 3`赋值操作将他覆盖重写了。在这种情况下，结果将会是一个无线循环，因为`i`被设置成一个固定的值`3`结果将永远小于`< 10`。
+
 The assignment inside `bar(..)` needs to declare a local variable to use, regardless of what identifier name is chosen. `var i = 3;` would fix the problem (and would create the previously mentioned "shadowed variable" declaration for `i`). An *additional*, not alternate, option is to pick another identifier name entirely, such as `var j = 3;`. But your software design may naturally call for the same identifier name, so utilizing scope to "hide" your inner declaration is your best/only option in that case.
+
+`bar(..)`内部的赋值操作需要声明一个本地的变量来使用,不论选择什么名字的标识符。`var i = 3;`会修复这个问题(将会创建于一个之前提到过的为i声明"遮蔽变量")。此外,一个非代替的选项就是取完全不同的另外一个标识符，类似`var j = 3;`。但是你的软件原本的设计可能就是相同的标识符名称,所以这种情况下利用作用域"隐藏"内部的声明是你最好的选择。
 
 #### Global "Namespaces"
 
