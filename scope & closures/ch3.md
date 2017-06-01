@@ -847,6 +847,6 @@ In ES6, the `let` keyword (a cousin to the `var` keyword) is introduced to allow
 
 Though some seem to believe so, block scope should not be taken as an outright replacement of `var` function scope. Both functionalities co-exist, and developers can and should use both function-scope and block-scope techniques where respectively appropriate to produce better, more readable/maintainable code.
 
-虽然有些人相信，块作用域应该不能被认为是用来完全替代`var`方法作用域的。两个方法共存，开发者可以和应该同时使用方法作用域和块作用域技巧来分别适当的使用让程序更好，使代码更可读/可维护。
+虽然有些人这么认为，但块作用域应该不能被认为是用来完全替代`var`方法作用域的。两个方法共存，开发者可以和应该同时使用方法作用域和块作用域技巧来分别适当的使用让程序更好，使代码更可读/可维护。
 
 [^note-leastprivilege]: [Principle of Least Privilege](http://en.wikipedia.org/wiki/Principle_of_least_privilege)
