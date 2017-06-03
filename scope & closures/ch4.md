@@ -1,15 +1,28 @@
 # You Don't Know JS: Scope & Closures
 # Chapter 4: Hoisting
 
+# 你不知道的JS：作用域和闭包
+# 第四章：提升
+
 By now, you should be fairly comfortable with the idea of scope, and how variables are attached to different levels of scope depending on where and how they are declared. Both function scope and block scope behave by the same rules in this regard: any variable declared within a scope is attached to that scope.
+
+现在,你应该对作用域的概念有了相当的熟悉，变量如何依附于不同层级的作用域取决于他们在哪里和如何声明。方法作用域和块作用都有相同的规则：任何变量在某个作用域中声明他就依附于这个作用域。
 
 But there's a subtle detail of how scope attachment works with declarations that appear in various locations within a scope, and that detail is what we will examine here.
 
+但是有一个微妙的细节就是作用域和似乎在作用域内部各种位置变量是如何工作的，这个细节是我们将会在这里调查的。
+
 ## Chicken Or The Egg?
+
+## 鸡或者是蛋
 
 There's a temptation to think that all of the code you see in a JavaScript program is interpreted line-by-line, top-down in order, as the program executes. While that is substantially true, there's one part of that assumption which can lead to incorrect thinking about your program.
 
+自上往下的顺序,在程序执行的时候，会诱使你觉得你看到的JavaScript程序是一行接一行被解释的。虽然这大体上是正确的，但是这个猜测的一部分会使你不准确的想你的程序。
+
 Consider this code:
+
+考虑这个代码：
 
 ```js
 a = 2;
@@ -21,9 +34,15 @@ console.log( a );
 
 What do you expect to be printed in the `console.log(..)` statement?
 
+`console.log(..)`表达式会输出什么你是如何猜测的?
+
 Many developers would expect `undefined`, since the `var a` statement comes after the `a = 2`, and it would seem natural to assume that the variable is re-defined, and thus assigned the default `undefined`. However, the output will be `2`.
 
+很多开发者会猜测`undefined`,因为`var a`表达式在`a = 2`之后,这很自然的会假设变量被重复定义了，这样被赋值默认值`undefined`。然而,输出将会是`2`。
+
 Consider another piece of code:
+
+考虑一下另外一段代码:
 
 ```js
 console.log( a );
@@ -33,15 +52,27 @@ var a = 2;
 
 You might be tempted to assume that, since the previous snippet exhibited some less-than-top-down looking behavior, perhaps in this snippet, `2` will also be printed. Others may think that since the `a` variable is used before it is declared, this must result in a `ReferenceError` being thrown.
 
+因为前面一段代码展示的绝不是自上到下的的举止，你也许会被诱惑去假设，也许在这段片段中，仍然将输出`2`。其他可能会像因为  `a`在声明之前被使用，结果肯定会抛出一个`ReferenceError`(引用错误)的错误。
+
 Unfortunately, both guesses are incorrect. `undefined` is the output.
+
+不幸的是，他们的猜测都是不正确的。 `undefined` 才是输出。
 
 **So, what's going on here?** It would appear we have a chicken-and-the-egg question. Which comes first, the declaration ("egg"), or the assignment ("chicken")?
 
+**所以，这里发生了什么？** 这似乎看起来让我们有了一个先有鸡还是先有蛋的问题。什么在前，是声明("蛋")，或者是赋值("鸡")。
+
 ## The Compiler Strikes Again
+
+## 编译者再次来袭
 
 To answer this question, we need to refer back to Chapter 1, and our discussion of compilers. Recall that the *Engine* actually will compile your JavaScript code before it interprets it. Part of the compilation phase was to find and associate all declarations with their appropriate scopes. Chapter 2 showed us that this is the heart of Lexical Scope.
 
+为了回答这个问题，我们需要参考之前的第一章，我们讨论过的编译器。回顾之前*引擎*实际上会在解释之前编译你的JavaScript代码。编译阶段的有一部分就是找到所有变量然后将他们和所占用的作用域联系起来。第二章向我们展示了这是词法作用域的核心。
+
 So, the best way to think about things is that all declarations, both variables and functions, are processed first, before any part of your code is executed.
+
+所以，对于所有变量，不论是变量还是方法，最好把他们想成，他们会你的代码被执行之前的任何一步先被处理。
 
 When you see `var a = 2;`, you probably think of that as one statement. But JavaScript actually thinks of it as two statements: `var a;` and `a = 2;`. The first statement, the declaration, is processed during the compilation phase. The second statement, the assignment, is left **in place** for the execution phase.
 
