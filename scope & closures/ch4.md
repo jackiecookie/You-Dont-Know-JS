@@ -76,7 +76,11 @@ So, the best way to think about things is that all declarations, both variables 
 
 When you see `var a = 2;`, you probably think of that as one statement. But JavaScript actually thinks of it as two statements: `var a;` and `a = 2;`. The first statement, the declaration, is processed during the compilation phase. The second statement, the assignment, is left **in place** for the execution phase.
 
+当你看见 `var a = 2;`,你可能把他认为是一个表达式。但是JavaScript实际上把他认为是两个表达式:`var a;`和`a = 2;`。第一个表达式，是一个声明，在编译阶段被处理。第二个表达式，是赋值表达式，在他的位置上在执行阶段执行。
+
 Our first snippet then should be thought of as being handled like this:
+
+我们的第一个片段我们可以把他想象成会像接下来这样处理:
 
 ```js
 var a;
@@ -89,7 +93,11 @@ console.log( a );
 
 ...where the first part is the compilation and the second part is the execution.
 
+哪里第一部分是编译第二部分是执行。
+
 Similarly, our second snippet is actually processed as:
+
+类似的，我们的第二段代码实际上会这样处理：
 
 ```js
 var a;
@@ -102,9 +110,15 @@ a = 2;
 
 So, one way of thinking, sort of metaphorically, about this process, is that variable and function declarations are "moved" from where they appear in the flow of the code to the top of the code. This gives rise to the name "Hoisting".
 
+所以，关于这个过程，可以把他想象成，类似比喻的方式，变量和方法声明会从在某些代码流中出现"被移动"到代码的顶部。这就有了名字"提升"。
+
 In other words, **the egg (declaration) comes before the chicken (assignment)**.
 
+换句话来说，**先有蛋(声明)然后有鸡(赋值)**。
+
 **Note:** Only the declarations themselves are hoisted, while any assignments or other executable logic are left *in place*. If hoisting were to re-arrange the executable logic of our code, that could wreak havoc.
+
+**注意：** 只有声明自己会被提升，任何赋值或者其他可执行的逻辑都会留在原地。如果提升会重新安排我们代码的可执行逻辑，那会造成大灾难。
 
 ```js
 foo();
@@ -118,7 +132,11 @@ function foo() {
 
 The function `foo`'s declaration (which in this case *includes* the implied value of it as an actual function) is hoisted, such that the call on the first line is able to execute.
 
+方法`foo`的声明(在这个例子中*包含*了一个隐含的值实际作为一个方法)被提升了，所以在第一行的调用时可以执行的。
+
 It's also important to note that hoisting is **per-scope**. So while our previous snippets were simplified in that they only included global scope, the `foo(..)` function we are now examining itself exhibits that `var a` is hoisted to the top of `foo(..)` (not, obviously, to the top of the program). So the program can perhaps be more accurately interpreted like this:
+
+注意到提升是**依照作用域**来的是很重要的。虽然我们的前一段代码被简化成只包含全局作用域，我们需要测试的方法`foo(..)`自己展示了，变量`var a`被提升到`foo(..)`的顶端(显然，不是程序的顶部)。所以程序也许可以更准确的像这样解释：
 
 ```js
 function foo() {
@@ -134,6 +152,8 @@ foo();
 
 Function declarations are hoisted, as we just saw. But function expressions are not.
 
+就像我们之前看到的，方法声明会被提升。但是方法表达式不会。
+
 ```js
 foo(); // not ReferenceError, but TypeError!
 
@@ -144,7 +164,11 @@ var foo = function bar() {
 
 The variable identifier `foo` is hoisted and attached to the enclosing scope (global) of this program, so `foo()` doesn't fail as a `ReferenceError`. But `foo` has no value yet (as it would if it had been a true function declaration instead of expression). So, `foo()` is attempting to invoke the `undefined` value, which is a `TypeError` illegal operation.
 
+变量标识符`foo`被提升了然后依附于程序中包围的作用域(全局)，所以`foo()`的结果不是失败然后抛出一个`ReferenceError(引用错误)`错误。但是`foo`还没有值(如果他是一个方法声明而不是一个方法表达式那么他就会有值)。所以，`foo()`企图触发一个`undefined`值，这是一个`TypeError(类型错误)`的不合法操作。
+
 Also recall that even though it's a named function expression, the name identifier is not available in the enclosing scope:
+
+即使方法表达式被取了名字，这个标识符的名字在包围的作用域中也不是变量：
 
 ```js
 foo(); // TypeError
@@ -156,6 +180,8 @@ var foo = function bar() {
 ```
 
 This snippet is more accurately interpreted (with hoisting) as:
+
+这个片段可以更精确的被解释(提升)为：
 
 ```js
 var foo;
@@ -171,9 +197,15 @@ foo = function() {
 
 ## Functions First
 
+## 方法优先
+
 Both function declarations and variable declarations are hoisted. But a subtle detail (that *can* show up in code with multiple "duplicate" declarations) is that functions are hoisted first, and then variables.
 
+方法声明和变量声明都会提升。但是有个微妙的细节(*可以* 在代码中通过声明多个重复变量来显示)是方法会先被提升，然后是变量。
+
 Consider:
+
+考虑一下：
 
 ```js
 foo(); // 1
@@ -191,6 +223,8 @@ foo = function() {
 
 `1` is printed instead of `2`! This snippet is interpreted by the *Engine* as:
 
+`1` 会被输出而不是 `2`！这个片段被引擎解释为：
+
 ```js
 function foo() {
 	console.log( 1 );
@@ -205,7 +239,11 @@ foo = function() {
 
 Notice that `var foo` was the duplicate (and thus ignored) declaration, even though it came before the `function foo()...` declaration, because function declarations are hoisted before normal variables.
 
+注意`var foo`是一个重复(因此被忽略)声明，尽管他在`function foo()...`之后声明，因为方法声明会被提升到普通声明之后。
+
 While multiple/duplicate `var` declarations are effectively ignored, subsequent function declarations *do* override previous ones.
+
+虽然多个/重复 `var` 声明会被忽略，但是按照顺序方法声明覆盖了前面一个。
 
 ```js
 foo(); // 3
@@ -225,7 +263,11 @@ function foo() {
 
 While this all may sound like nothing more than interesting academic trivia, it highlights the fact that duplicate definitions in the same scope are a really bad idea and will often lead to confusing results.
 
+虽然这一切似乎听起来只不过是有趣的学术上的琐事，但是要强调的事实是在同个作用域中重复定义真的是个不好的主意而且将会引起令人疑惑的结果。
+
 Function declarations that appear inside of normal blocks typically hoist to the enclosing scope, rather than being conditional as this code implies:
+
+方法声明在普通的块中出现通常会提升到包围他的作用域中，而不是像这段代码暗示的传统方式一样：
 
 ```js
 foo(); // "b"
@@ -241,12 +283,24 @@ else {
 
 However, it's important to note that this behavior is not reliable and is subject to change in future versions of JavaScript, so it's probably best to avoid declaring functions in blocks.
 
+然而，注意到这个举止是不可信任的而且根据未来的JavaScript版本修改会受影响是很重要的，所以最好尽可能避免在块中声明方法。
+
 ## Review (TL;DR)
+
+## 回顾(TL;DR)
 
 We can be tempted to look at `var a = 2;` as one statement, but the JavaScript *Engine* does not see it that way. It sees `var a` and `a = 2` as two separate statements, the first one a compiler-phase task, and the second one an execution-phase task.
 
+我们会被诱惑把`var a = 2;`当成一个表达式，但是JavaScript *引擎* 不会把他认为这个样子。他把`var a`和`a = 2`作为两个完全分开的表达式，第一个是编译阶段的任务，而第二个是执行阶段的任务。
+
 What this leads to is that all declarations in a scope, regardless of where they appear, are processed *first* before the code itself is executed. You can visualize this as declarations (variables and functions) being "moved" to the top of their respective scopes, which we call "hoisting".
+
+作用域中的所有声明会如何被处理，不管在哪里出现，会在代码自己执行之前*首先*被处理。你可以把这个视作变量(变量和方法)会*被移动*到各自的作用域的顶上，我们叫做"提升"。
 
 Declarations themselves are hoisted, but assignments, even assignments of function expressions, are *not* hoisted.
 
+变量他自己会被提升，但是赋值，即使是方法表达式的赋值，都*不会*被提升
+
 Be careful about duplicate declarations, especially mixed between normal var declarations and function declarations -- peril awaits if you do!
+
+小心重复的声明，特别是普通的var声明和方法声明混合的情况 -- 如果你这么做的话会面临严重的危险！
