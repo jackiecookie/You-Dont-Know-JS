@@ -1,23 +1,44 @@
 # You Don't Know JS: Scope & Closures
 # Chapter 5: Scope Closure
 
+# 你不知道的JS：作用域 & 闭包
+# 第五章：作用域闭包
+
 We arrive at this point with hopefully a very healthy, solid understanding of how scope works.
+
+我们希望我们能带着健全，扎实的对作用域如何工作的理解来带这里。
 
 We turn our attention to an incredibly important, but persistently elusive, *almost mythological*, part of the language: **closure**. If you have followed our discussion of lexical scope thus far, the payoff is that closure is going to be, largely, anticlimactic, almost self-obvious. *There's a man behind the wizard's curtain, and we're about to see him*. No, his name is not Crockford!
 
+我们把注意力转到一个极其重要，但是反复出现且难以察觉，几乎是语言神话般的一部分:**闭包**。如果你关注了我们到目前为止对词法作用域的讨论，结果就是闭包将会变的有些扫兴，几乎是显而易见的。*一个男人躲在巫师的窗帘后面，我们要去见他*。不他的名字不是Crockford。
+
 If however you have nagging questions about lexical scope, now would be a good time to go back and review Chapter 2 before proceeding.
+
+然而如果你有一些关于词法作用域难以搞懂的问题，现在在处理之前会是一个好时机去回顾第二章的内容。
 
 ## Enlightenment
 
+## 启发
+
 For those who are somewhat experienced in JavaScript, but have perhaps never fully grasped the concept of closures, *understanding closure* can seem like a special nirvana that one must strive and sacrifice to attain.
+
+对那些稍微对JavaScript有点经验的人，但是也许从来没有完全领悟闭包概念的人，*理解闭包* 似乎有点像一个我们必须努力和牺牲去达到的特别的境界。
 
 I recall years back when I had a firm grasp on JavaScript, but had no idea what closure was. The hint that there was *this other side* to the language, one which promised even more capability than I already possessed, teased and taunted me. I remember reading through the source code of early frameworks trying to understand how it actually worked. I remember the first time something of the "module pattern" began to emerge in my mind. I remember the *a-ha!* moments quite vividly.
 
+我回忆几年之前当我对JavaScript掌握的挺扎实，但我还是不知道闭包是什么。这暗示着语言的*另外一边*，他承诺了比我准备处理的更多的能力，取笑和戏弄我。我记得我通过读早起框架的源代码来试图理解它实际上是如何工作的。我记得第一次"模块模式的"一些东西开始出现在我脑海里。我记得*阿哈*的瞬间非常的生动。
+
 What I didn't know back then, what took me years to understand, and what I hope to impart to you presently, is this secret: **closure is all around you in JavaScript, you just have to recognize and embrace it.** Closures are not a special opt-in tool that you must learn new syntax and patterns for. No, closures are not even a weapon that you must learn to wield and master as Luke trained in The Force.
+
+什么是我那个时候不知道的，什么让我花了几年的时间来理解，什么是我希望最先传授给你的，是这个秘密：**在JavaScript中到处都有闭包，你只需要认出他然后拥抱他。** 闭包不是一个需要你为他学习新的语法和模式的特别的选择性使用的工具。不，闭包甚至不是一个你必须学着使用的武器也不需要像Luke一样训练像大师一样使用这种武力。
 
 Closures happen as a result of writing code that relies on lexical scope. They just happen. You do not even really have to intentionally create closures to take advantage of them. Closures are created and used for you all over your code. What you are *missing* is the proper mental context to recognize, embrace, and leverage closures for your own will.
 
+闭包作为书写代码的结果依赖于词法作用域。他就这样发生了。你甚至不是有意的创造了闭包然后在它身上获得益处。闭包在你的代码的各个地方被创建和使用。你缺失是更好的思维环境去识别，拥抱，和影响闭包来做你自己想做的事。
+
 The enlightenment moment should be: **oh, closures are already occurring all over my code, I can finally *see* them now.** Understanding closures is like when Neo sees the Matrix for the first time.
+
+这个开光的瞬间应该是:**噢，闭包已经在我代码的到处执行了，现在我终于可以*看见*他*了** 理解闭包就像第一次Neo看见Matrix的时候。
 
 ## Nitty Gritty
 
