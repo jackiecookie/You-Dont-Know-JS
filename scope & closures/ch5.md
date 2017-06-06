@@ -120,21 +120,39 @@ The function `bar()` has lexical scope access to the inner scope of `foo()`. But
 
 After we execute `foo()`, we assign the value it returned (our inner `bar()` function) to a variable called `baz`, and then we actually invoke `baz()`, which of course is invoking our inner function `bar()`, just by a different identifier reference.
 
+在我们执行了`foo()`之后，我们把返回回来(我们内部的方法)的值赋值给了一个变量叫做`baz`，接着我们触发了`baz()`，事实上就是执行了我们的内部方法 `bar()`,只不过使用了另外一个标识符引用。
+
 `bar()` is executed, for sure. But in this case, it's executed *outside* of its declared lexical scope.
+
+可以肯定的是`bar()`被执行了。但是在这个例子中，他在声明作用域的*外面*被执行了。
 
 After `foo()` executed, normally we would expect that the entirety of the inner scope of `foo()` would go away, because we know that the *Engine* employs a *Garbage Collector* that comes along and frees up memory once it's no longer in use. Since it would appear that the contents of `foo()` are no longer in use, it would seem natural that they should be considered *gone*.
 
+`foo()`被执行后，通常情况下我们会猜想整个`foo()`作用域内部会释放，因为我们知道*引擎*使用一个*垃圾回收*来释放之后都不在使用的内存。因为`foo()`的内容看起来不在被使用，似乎自然的他应该被认为是*消失*了。
+
 But the "magic" of closures does not let this happen. That inner scope is in fact *still* "in use", and thus does not go away. Who's using it? **The function `bar()` itself**.
+
+但是闭包的"魔法"不会让这个发生。内部的作用域实际上*仍然*"在使用"，所以不能被释放。谁在使用？ **方法`bar()`本身**。
 
 By virtue of where it was declared, `bar()` has a lexical scope closure over that inner scope of `foo()`, which keeps that scope alive for `bar()` to reference at any later time.
 
+因为他声明的位置，`bar()`在作用域`foo()`内部有一个词法作用域闭包，他使那个作用始终存活着为了 `bar()`能够在后面的时间能够引用。
+
 **`bar()` still has a reference to that scope, and that reference is called closure.**
+
+**`bar()`仍然对那个作用域有一个引用，这个引用被叫做闭包。**
 
 So, a few microseconds later, when the variable `baz` is invoked (invoking the inner function we initially labeled `bar`), it duly has *access* to author-time lexical scope, so it can access the variable `a` just as we'd expect.
 
+所以，几毫秒之后，当变量`baz`被触发(执行我们初始化标记为`bar`的内部方法)，他当然有访问书写时词法作用域的权限，所以他可以像我们希望的一样访问变量`a`。
+
 The function is being invoked well outside of its author-time lexical scope. **Closure** lets the function continue to access the lexical scope it was defined in at author-time.
 
+这个方法在书写时词法作用域的外面仍然可以被执行。**闭包** 使方法可以继续读取在书写时定义的词法作用域。
+
 Of course, any of the various ways that functions can be *passed around* as values, and indeed invoked in other locations, are all examples of observing/exercising closure.
+
+当然，方法可以用各种各样的方式去*传来传去*作为变量，的确可以在其他位置被触发，这都是典型的观察/使用闭包。
 
 ```js
 function foo() {
@@ -146,7 +164,7 @@ function foo() {
 
 	bar( baz );
 }
-
+、
 function bar(fn) {
 	fn(); // look ma, I saw closure!
 }
