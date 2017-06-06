@@ -42,13 +42,23 @@ The enlightenment moment should be: **oh, closures are already occurring all ove
 
 ## Nitty Gritty
 
+## 重要细节
+
 OK, enough hyperbole and shameless movie references.
+
+OK,已经受够了这种夸张且没有羞耻心的电影引用了。
 
 Here's a down-n-dirty definition of what you need to know to understand and recognize closures:
 
+你需要如何理解和识别闭包,这里是定义
+
 > Closure is when a function is able to remember and access its lexical scope even when that function is executing outside its lexical scope.
 
+> 闭包是当一个方法需要记住和存取这个作用域尽管这个方法在这个作用域的外部执行。
+
 Let's jump into some code to illustrate that definition.
+
+让我们跳到某些代码来举例说明这个定义。
 
 ```js
 function foo() {
@@ -66,15 +76,27 @@ foo();
 
 This code should look familiar from our discussions of Nested Scope. Function `bar()` has *access* to the variable `a` in the outer enclosing scope because of lexical scope look-up rules (in this case, it's an RHS reference look-up).
 
+经过我们之前讨论的嵌套作用域这个代码应该会看起来有些熟悉。方法`bar()`有*读取*在包围作用域外部的变量`a`因为根据作用域查询规则他可以这么做(在这个例子中，是一个RHS引用查看)。
+
 Is this "closure"?
+
+这就是"闭包"?
 
 Well, technically... *perhaps*. But by our what-you-need-to-know definition above... *not exactly*. I think the most accurate way to explain `bar()` referencing `a` is via lexical scope look-up rules, and those rules are *only* (an important!) **part** of what closure is.
 
+恩,技术上来说...*也许*。但是根据什么是你需要知道关于定义...*不准确*。我想最准确的方式来解释`bar()`对`a`的引用是它根据了词法作用域的查询规则，这些规则*只是*(一个很重要的)闭包的一部分。
+
 From a purely academic perspective, what is said of the above snippet is that the function `bar()` has a *closure* over the scope of `foo()` (and indeed, even over the rest of the scopes it has access to, such as the global scope in our case). Put slightly differently, it's said that `bar()` closes over the scope of `foo()`. Why? Because `bar()` appears nested inside of `foo()`. Plain and simple.
+
+根据一个纯学术的观点，我们说这段代码方法`bar()`有对于作用域`foo()`一个闭包(的确，即使是在其余的作用域中还是可以读取，你像我们例子中的全局作用域)。换句略有不同的话来说，`bar()`关闭了`foo()`作用域。为什么?因为`bar()`出现被嵌套在`foo()`中。简单清楚。
 
 But, closure defined in this way is not directly *observable*, nor do we see closure *exercised* in that snippet. We clearly see lexical scope, but closure remains sort of a mysterious shifting shadow behind the code.
 
+但是，闭包被按照这种方式定义就不是直接为*可观察*了，闭包也不是我们在这段代码中看到的这样使用。我们清楚的看到词法作用域，但是闭包就像是代码背后神秘的快速移动的影子。
+
 Let us then consider code which brings closure into full light:
+
+让我们接下来考虑这段使闭包被照亮显示出来的代码：
 
 ```js
 function foo() {
@@ -93,6 +115,8 @@ baz(); // 2 -- Whoa, closure was just observed, man.
 ```
 
 The function `bar()` has lexical scope access to the inner scope of `foo()`. But then, we take `bar()`, the function itself, and pass it *as* a value. In this case, we `return` the function object itself that `bar` references.
+
+方法`bar()`有`foo()`作用域内部的词法作用域读取权。但是现在,我们得到`bar()`方法本身，然后把他作为值一样传输。在这个例子中，我们`return``bar`方法对象本身的引用。
 
 After we execute `foo()`, we assign the value it returned (our inner `bar()` function) to a variable called `baz`, and then we actually invoke `baz()`, which of course is invoking our inner function `bar()`, just by a different identifier reference.
 
