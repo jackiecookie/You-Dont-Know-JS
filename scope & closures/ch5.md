@@ -172,7 +172,11 @@ function bar(fn) {
 
 We pass the inner function `baz` over to `bar`, and call that inner function (labeled `fn` now), and when we do, its closure over the inner scope of `foo()` is observed, by accessing `a`.
 
+我们把内部的方法`baz`传给`bar`，然后执行这个内部方法(现在被标记成`fn`)，然后当我们这么做的时候，`foo()`内部作用域的闭包通过读取变量`a`被观察了。
+
 These passings-around of functions can be indirect, too.
+
+这种传递方法也可以是间接的。
 
 ```js
 var fn;
@@ -198,9 +202,15 @@ bar(); // 2
 
 Whatever facility we use to *transport* an inner function outside of its lexical scope, it will maintain a scope reference to where it was originally declared, and wherever we execute it, that closure will be exercised.
 
+不论我们用了什么设施来*运输*一个内部的作用域运出到他外部的作用域，这都将会保持作用域他原本声明的地方的引用，不管他在哪里被执行，这个闭包都将会被使用。
+
 ## Now I Can See
 
+## 现在我看见了
+
 The previous code snippets are somewhat academic and artificially constructed to illustrate *using closure*. But I promised you something more than just a cool new toy. I promised that closure was something all around you in your existing code. Let us now *see* that truth.
+
+前面的代码片段有些某种程度上有点从学术和不自然的结构上来举例说明*使用闭包*。但是我保证你看到不仅仅是一个酷的新玩具。我保证闭包在你存在的代码中到处都有。让我们现在来*看*真相。
 
 ```js
 function wait(message) {
@@ -216,13 +226,23 @@ wait( "Hello, closure!" );
 
 We take an inner function (named `timer`) and pass it to `setTimeout(..)`. But `timer` has a scope closure over the scope of `wait(..)`, indeed keeping and using a reference to the variable `message`.
 
+我们将一个内部方法(取名为`timer`)传给`setTimeout(..)`。但是`timer`有一个作用域闭包引用着作用域`wait(..)`，事实上保持和引用着变量`message`的引用。
+
 A thousand milliseconds after we have executed `wait(..)`, and its inner scope should otherwise be long gone, that inner function `timer` still has closure over that scope.
+
+一千毫秒之后我们执行了`wait(..)`,要不是内部的方法`timer`仍然有作用域的闭包，否则它内部的作用域应该早就消失了。
 
 Deep down in the guts of the *Engine*, the built-in utility `setTimeout(..)` has reference to some parameter, probably called `fn` or `func` or something like that. *Engine* goes to invoke that function, which is invoking our inner `timer` function, and the lexical scope reference is still intact.
 
+将*引擎*的核心挖的更深，构建工具`setTimeout(..)`有一些参数的引用，可能叫做`fn`或者`func`又或者是类似的名字。*引擎* 会去执行这个方法，也就是我们这里我们内部的`timer`方法，他的词法作用域引用仍然完好无损。
+
 **Closure.**
 
+**闭包。**
+
 Or, if you're of the jQuery persuasion (or any JS framework, for that matter):
+
+或者，如果你是jQuery信仰者(或者任何一个JS框架,关于这一点)：
 
 ```js
 function setupBot(name,selector) {
@@ -237,9 +257,15 @@ setupBot( "Closure Bot 2", "#bot_2" );
 
 I am not sure what kind of code you write, but I regularly write code which is responsible for controlling an entire global drone army of closure bots, so this is totally realistic!
 
+我不确定你写的代码时什么类型，但是我经常写的代码来负责控制整个全球的闭包机器人军团，所以这就是现实。
+
 (Some) joking aside, essentially *whenever* and *wherever* you treat functions (which access their own respective lexical scopes) as first-class values and pass them around, you are likely to see those functions exercising closure. Be that timers, event handlers, Ajax requests, cross-window messaging, web workers, or any of the other asynchronous (or synchronous!) tasks, when you pass in a *callback function*, get ready to sling some closure around!
 
+将玩笑放一边，本质上你把方法(读取他们各自词法作用域)作为第一类值然后不管*什么时候*和*在哪里*将他们传来传去，我基本上可以看见这些方法运用了闭包。当你使用timers，事件处理，Ajax请求，跨window的消息，web workers，或者任何一个其他的异步(或者同步)任务，当你传入一个*回调方法*，其实就是将闭包一起甩了过去。
+
 **Note:** Chapter 3 introduced the IIFE pattern. While it is often said that IIFE (alone) is an example of observed closure, I would somewhat disagree, by our definition above.
+
+**注意:** 第三章介绍了IIFE模式。虽然经常说IIFE(独自的)是一个观察闭包的例子，但根据我们的定义，某种程度上我不同意。
 
 ```js
 var a = 2;
@@ -251,17 +277,31 @@ var a = 2;
 
 This code "works", but it's not strictly an observation of closure. Why? Because the function (which we named "IIFE" here) is not executed outside its lexical scope. It's still invoked right there in the same scope as it was declared (the enclosing/global scope that also holds `a`). `a` is found via normal lexical scope look-up, not really via closure.
 
+这个代码"可以工作",但是这不是严格意义上的观察闭包。为什么？因为方法(我们在这里命名为"IIFE")没有在他词法作用域外部执行。他仍然在他声明(包围的/全局作用域仍然保持着`a`)的同一个作用域中被执行。`a`经过普通的词法作用域查看找到，而不是真正的通过闭包找到。
+
 While closure might technically be happening at declaration time, it is *not* strictly observable, and so, as they say, *it's a tree falling in the forest with no one around to hear it.*
+
+虽然闭包技术上发生在声明时，但*不是*严格的可观察，所以，就像他们说的，*一棵树落在了森林里没人看见也没人听见。*
 
 Though an IIFE is not *itself* an example of closure, it absolutely creates scope, and it's one of the most common tools we use to create scope which can be closed over. So IIFEs are indeed heavily related to closure, even if not exercising closure themselves.
 
+尽管一个IIFE*本身*不是闭包的例子，但是他绝对创建作用域，而且他是我们用于创建作用域而且别人无法访问的最常用工具的其中之一。所以IIFE的确很大程度上和闭包相关，即使他自己没有使用闭包。
+
 Put this book down right now, dear reader. I have a task for you. Go open up some of your recent JavaScript code. Look for your functions-as-values and identify where you are already using closure and maybe didn't even know it before.
+
+亲爱的读者，现在合上这本书。我有一个任务给你。去打开你最近写的JavaScript代码。找到你把方法作为参数和找出之前并不知道但使用了闭包的地方。
 
 I'll wait.
 
+我会等你。
+
 Now... you see!
 
+现在... 你看到了！
+
 ## Loops + Closure
+
+## 循环 + 闭包
 
 The most common canonical example used to illustrate closure involves the humble for-loop.
 
