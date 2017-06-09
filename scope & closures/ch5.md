@@ -658,7 +658,11 @@ By retaining an inner reference to the public API object inside your module inst
 
 ### Modern Modules
 
+### 现代模块
+
 Various module dependency loaders/managers essentially wrap up this pattern of module definition into a friendly API. Rather than examine any one particular library, let me present a *very simple* proof of concept **for illustration purposes (only)**:
+
+各种模块依赖的加载机制/管理机制本质上是包裹这个模块模式来定义一个友好的API。与其检验任何一个特别的库，**为了举例说明的目的(仅仅)** 让我来提出一个*非常简单*证明观点 ：
 
 ```js
 var MyModules = (function Manager() {
@@ -684,7 +688,11 @@ var MyModules = (function Manager() {
 
 The key part of this code is `modules[name] = impl.apply(impl, deps)`. This is invoking the definition wrapper function for a module (passing in any dependencies), and storing the return value, the module's API, into an internal list of modules tracked by name.
 
+这个代码的关键部分是`modules[name] = impl.apply(impl, deps)`。执行方法来替一个模块定义一个包围的方法(传入任何的依赖)，然后存储返回值，也就是模块的API，存储在一个模块内部的列表里用名字跟踪。
+
 And here's how I might use it to define some modules:
+
+这里是我如何使用来定一些模块：
 
 ```js
 MyModules.define( "bar", [], function(){
@@ -721,11 +729,19 @@ foo.awesome(); // LET ME INTRODUCE: HIPPO
 
 Both the "foo" and "bar" modules are defined with a function that returns a public API. "foo" even receives the instance of "bar" as a dependency parameter, and can use it accordingly.
 
+"foo" 和 "bar"模块都通过一个方法来定义然后返回一个公开的API。 "foo"甚至可以接受"bar"的实例作为一个依赖参数，而且还可以相应的使用。
+
 Spend some time examining these code snippets to fully understand the power of closures put to use for our own good purposes. The key take-away is that there's not really any particular "magic" to module managers. They fulfill both characteristics of the module pattern I listed above: invoking a function definition wrapper, and keeping its return value as the API for that module.
+
+花费一些时间来测验这些代码片段来完全理解闭包的力量来为我们的好的目标使用。关键之处在于模块管理并不是任何特别的"魔法"。他实现了我列下来的关于模块模式的全部特性:执行一个方法定义包围者，然后保持他的返回值作为模块的API。
 
 In other words, modules are just modules, even if you put a friendly wrapper tool on top of them.
 
+换句话来说，模块只是模块，尽管你给他套上了友好的外衣。
+
 ### Future Modules
+
+### 未来模块
 
 ES6 adds first-class syntax support for the concept of modules. When loaded via the module system, ES6 treats a file as a separate module. Each module can both import other modules or specific API members, as well export their own public API members.
 
