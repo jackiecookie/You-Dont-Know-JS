@@ -745,6 +745,8 @@ In other words, modules are just modules, even if you put a friendly wrapper too
 
 ES6 adds first-class syntax support for the concept of modules. When loaded via the module system, ES6 treats a file as a separate module. Each module can both import other modules or specific API members, as well export their own public API members.
 
+ES6加入了第一类型的语法来支持模块这个观念。当加载模块经由模块系统,ES6对待一个文件作为一个独立的模块。每个模块都可以引入其他模块或者具体的API对象，也可以输出自己的公开API对象。
+
 **Note:** Function-based modules aren't a statically recognized pattern (something the compiler knows about), so their API semantics aren't considered until run-time. That is, you can actually modify a module's API during the run-time (see earlier `publicAPI` discussion).
 
 By contrast, ES6 Module APIs are static (the APIs don't change at run-time). Since the compiler knows *that*, it can (and does!) check during (file loading and) compilation that a reference to a member of an imported module's API *actually exists*. If the API reference doesn't exist, the compiler throws an "early" error at compile-time, rather than waiting for traditional dynamic run-time resolution (and errors, if any).
