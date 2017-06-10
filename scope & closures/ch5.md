@@ -749,11 +749,19 @@ ES6加入了第一类型的语法来支持模块这个观念。当加载模块�
 
 **Note:** Function-based modules aren't a statically recognized pattern (something the compiler knows about), so their API semantics aren't considered until run-time. That is, you can actually modify a module's API during the run-time (see earlier `publicAPI` discussion).
 
+**注意:** 方法为基础的模块不是一个静态被识别的模式(一些编译器知道的)，所以他们API语义不被考虑直到运行时。就因为这个，你可以在运行时修改一个模块的API(见更简单的`publicAPI`讨论)。
+
 By contrast, ES6 Module APIs are static (the APIs don't change at run-time). Since the compiler knows *that*, it can (and does!) check during (file loading and) compilation that a reference to a member of an imported module's API *actually exists*. If the API reference doesn't exist, the compiler throws an "early" error at compile-time, rather than waiting for traditional dynamic run-time resolution (and errors, if any).
+
+相反的，ES6模块API是静态的(API不会再运行时被修改)。因为编译器知道*那个*,他可以(和做)在(文件加载和)编译时检查一个被导入模块的引用对象API*是否存在*。如果API引用不存在，编译器会在编译时抛出一个"过早(early)"错误，而不是等到传统动态运行时解决方案(和错误,如果有的话)。
 
 ES6 modules **do not** have an "inline" format, they must be defined in separate files (one per module). The browsers/engines have a default "module loader" (which is overridable, but that's well-beyond our discussion here) which synchronously loads a module file when it's imported.
 
+ES6模块**不会**有一个"行内"格式化,他们必须在一个独立的文件中定义(每个一个模块)。浏览器/引擎有一个默认的"模块加载器"(可以被覆盖的，但是这个已经超出我们的在这里的讨论)他会在导入的时候同步在家一个模块。
+
 Consider:
+
+考虑：
 
 **bar.js**
 ```js
@@ -794,18 +802,36 @@ foo.awesome(); // LET ME INTRODUCE: HIPPO
 
 **Note:** Separate files **"foo.js"** and **"bar.js"** would need to be created, with the contents as shown in the first two snippets, respectively. Then, your program would load/import those modules to use them, as shown in the third snippet.
 
+**注意:** **"foo.js"** 和 **"bar.js"** 这两个单独的文件需要各自被创建，他们的内容就是第一第二个片段。接下来，你的程序会加载/引入这些模块然后使用他们，就像第三段代码这样。
+
 `import` imports one or more members from a module's API into the current scope, each to a bound variable (`hello` in our case). `module` imports an entire module API to a bound variable (`foo`, `bar` in our case). `export` exports an identifier (variable, function) to the public API for the current module. These operators can be used as many times in a module's definition as is necessary.
+
+`import`从一个模块的API中导入一个或者多个对象到当前的作用域，每一个绑定一个变量(在我们的例子中是`hello`)。`module`导入一整个模块的API然后绑定一个变量(在我们例子中是`foo`, `bar`)。`export`输出一个标识符(变量,方法)作为当前模块的公开API。这些操作可以在必要的时候在一个模块的定义中使用多次。
 
 The contents inside the *module file* are treated as if enclosed in a scope closure, just like with the function-closure modules seen earlier.
 
+*模块文件* 内部的内容被当做包围的一个闭包作用域，就好像我们之前看到的方法闭包模块。
+
 ## Review (TL;DR)
+
+## 回顾 (TL;DR)
 
 Closure seems to the un-enlightened like a mystical world set apart inside of JavaScript which only the few bravest souls can reach. But it's actually just a standard and almost obvious fact of how we write code in a lexically scoped environment, where functions are values and can be passed around at will.
 
+闭包似乎未被启发就像JavaScript中的一个神秘的世界只有一小部分最勇敢的灵魂可以达到。但是事实上是我们如何在一个词法作用域的环境中写代码的一个标准和几乎显而易见的事实，方法就是值可以根据你的需要被传来传去。
+
 **Closure is when a function can remember and access its lexical scope even when it's invoked outside its lexical scope.**
+
+**闭包就是当一个方法可以记住和读取自己的词法作用域即使当他在他的词法作用域外部被执行。**
 
 Closures can trip us up, for instance with loops, if we're not careful to recognize them and how they work. But they are also an immensely powerful tool, enabling patterns like *modules* in their various forms.
 
+如果我们不小心的识别闭包和不知道他们如何工作，在循环中使用实例，闭包可以将我们绊倒。但是他们也是一个有巨大力量的工具，启发了各种模式 *模块* 就是他的变化形式。
+
 Modules require two key characteristics: 1) an outer wrapping function being invoked, to create the enclosing scope 2) the return value of the wrapping function must include reference to at least one inner function that then has closure over the private inner scope of the wrapper.
 
+模块需要两个关键的特性：1)一个外部包围的方法需要被执行，来创建一个包围的作用域 2) 包围方法返回的值必须包含至少一个内部方法的引用,这个内部方法有包围函数的私有内部作用域的闭包。
+
 Now we can see closures all around our existing code, and we have the ability to recognize and leverage them to our own benefit!
+
+现在我们可以看到闭包在我们已经存在代码中到处都是，我们有能力去识别可以利用他们来为我们创造利益。
