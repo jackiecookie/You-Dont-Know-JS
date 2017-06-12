@@ -18,11 +18,19 @@ JavaScript的`this`机制并没有真正的*那么*高级，但是开发者经�
 
 **Note:** The word "this" is a terribly common pronoun in general discourse. So, it can be very difficult, especially verbally, to determine whether we are using "this" as a pronoun or using it to refer to the actual keyword identifier. For clarity, I will always use `this` to refer to the special keyword, and "this" or *this* or this otherwise.
 
+**注意:** 单词"this"在现代话语里是一个非常常见的发音。所以，不论是用"this"作为发音或者用它来引用一个真正的关键字标识符，这个可以非常难，特别是口头。为了更清楚，我将会使用`this`来引用一个特殊的关键字，除此之外用"this" 或者 *this* 或者 this。
+
 ## Why `this`?
+
+## 为什么`this`?
 
 If the `this` mechanism is so confusing, even to seasoned JavaScript developers, one may wonder why it's even useful? Is it more trouble than it's worth? Before we jump into the *how*, we should examine the *why*.
 
+如果`this`机制是那么的令人疑惑，即使是老练的JavaScript开发者，你可能会好奇为什么他还那么有用?他会带来更多的麻烦还是益处？在我们跳到*如何*之前，我们需要搞清楚*为什么*。
+
 Let's try to illustrate the motivation and utility of `this`:
+
+让我们来试图举例说明`this`的动机和用处：
 
 ```js
 function identify() {
