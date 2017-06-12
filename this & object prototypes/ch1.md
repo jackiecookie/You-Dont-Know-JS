@@ -6,11 +6,15 @@
 
 One of the most confused mechanisms in JavaScript is the `this` keyword. It's a special identifier keyword that's automatically defined in the scope of every function, but what exactly it refers to bedevils even seasoned JavaScript developers.
 
-
+JavaScript中最令人困惑的其中之一机制就是`this`关键字。这是一个特别的标识符关键字他会自动在每一个方法作用域中定义，但是他到底引用着什么长期困扰着JavaScript开发者甚至是老练的开发者。
 
 > Any sufficiently *advanced* technology is indistinguishable from magic. -- Arthur C. Clarke
 
+> 任何足够的*先进*的技术和魔法没什么区别。 -- Arthur C. Clarke
+
 JavaScript's `this` mechanism isn't actually *that* advanced, but developers often paraphrase that quote in their own mind by inserting "complex" or "confusing", and there's no question that without lack of clear understanding, `this` can seem downright magical in *your* confusion.
+
+JavaScript的`this`机制并没有真正的*那么*高级，但是开发者经常将那个引用解释就好像在他们的脑子里插入了"复杂"或者"疑惑"，缺乏了清楚的理解，`this`在*你的*疑惑里看起来就像是个十足的魔法这点事毫无疑问的。
 
 **Note:** The word "this" is a terribly common pronoun in general discourse. So, it can be very difficult, especially verbally, to determine whether we are using "this" as a pronoun or using it to refer to the actual keyword identifier. For clarity, I will always use `this` to refer to the special keyword, and "this" or *this* or this otherwise.
 
