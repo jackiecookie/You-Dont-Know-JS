@@ -379,6 +379,12 @@ In the next chapter, we will learn to find a function's **call-site** to determi
 
 `this` binding is a constant source of confusion for the JavaScript developer who does not take the time to learn how the mechanism actually works. Guesses, trial-and-error, and blind copy-n-paste from Stack Overflow answers is not an effective or proper way to leverage *this* important `this` mechanism.
 
+`this`绑定对那些没有花时间去学习这个机制是如何真正工作的人来说是会一直困惑的。猜测，实验然后出错，闭着眼睛从Stack Overflow拷贝粘贴不是一个有效或者更好的方式来利用这个重要的 `this` 机制。
+
 To learn `this`, you first have to learn what `this` is *not*, despite any assumptions or misconceptions that may lead you down those paths. `this` is neither a reference to the function itself, nor is it a reference to the function's *lexical* scope.
 
+要学`this`，你首先要学`this`不是什么，不管哪种假设或者错误的观点可能会使你走到错误的路上。`this`既不是对方法自己的一个引用，也不是对方法的*词法*作用域的一个引用。
+
 `this` is actually a binding that is made when a function is invoked, and *what* it references is determined entirely by the call-site where the function is called.
+
+`this`实际上是当方法被执行时进行的绑定，而他引用着什么整个取决于调用的位置也就是方法在哪里被执行。
