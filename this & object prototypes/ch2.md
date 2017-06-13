@@ -312,9 +312,15 @@ Either way the `this` is changed unexpectedly, you are not really in control of 
 
 ### Explicit Binding
 
+### 明确绑定
+
 With *implicit binding* as we just saw, we had to mutate the object in question to include a reference on itself to the function, and use this property function reference to indirectly (implicitly) bind `this` to the object.
 
+就像我们刚看到的*隐晦绑定*，我们需要转变一个对象在他本身包干一个方法的引用，然后使用这个方法属性间接的(隐晦的)绑定`this`为这个对象。
+
 But, what if you want to force a function call to use a particular object for the `this` binding, without putting a property function reference on the object?
+
+但是,如果你想强迫一个方法调用使用一个特定的对象作为`this`绑定如何在不用将一个属性方法引用放在对象上的方法达到目的？
 
 "All" functions in the language have some utilities available to them (via their `[[Prototype]]` -- more on that later) which can be useful for this task. Specifically, functions have `call(..)` and `apply(..)` methods. Technically, JavaScript host environments sometimes provide functions which are special enough (a kind way of putting it!) that they do not have such functionality. But those are few. The vast majority of functions provided, and certainly all functions you will create, do have access to `call(..)` and `apply(..)`.
 
