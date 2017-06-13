@@ -1,17 +1,32 @@
 # You Don't Know JS: *this* & Object Prototypes
 # Chapter 2: `this` All Makes Sense Now!
 
+# 你不知道的JS:*this* & 对象原型
+# 第二章:现在`this`的一切都有了意义
+
 In Chapter 1, we discarded various misconceptions about `this` and learned instead that `this` is a binding made for each function invocation, based entirely on its **call-site** (how the function is called).
+
+在第一章中，我们抛弃了各种有关`this`的错误的观点，然后学习了`this`其实是一个为每个方法执行进行的一个绑定，完全以**调用位置**为基础(方法如何被调用)。
 
 ## Call-site
 
+## 调用位置
+
 To understand `this` binding, we have to understand the call-site: the location in code where a function is called (**not where it's declared**). We must inspect the call-site to answer the question: what's *this* `this` a reference to?
+
+为了理解`this`绑定，我们需要了解调用位置:在代码中一个方法被调用的位置(**不是他在哪里声明**)。我们必须检查调用位置来回答这个问题:这个`this`引用着什么?
 
 Finding the call-site is generally: "go locate where a function is called from", but it's not always that easy, as certain coding patterns can obscure the *true* call-site.
 
+通常找到调用位置是:"到一个方法从哪里被调用的位置"，但是这不是每次都那么简单，例如某一种代码模式会混淆*真正*的调用位置。
+
 What's important is to think about the **call-stack** (the stack of functions that have been called to get us to the current moment in execution). The call-site we care about is *in* the invocation *before* the currently executing function.
 
+重要的是要考虑**调用堆栈**(方法调用的堆栈使我们能到达当前执行的瞬间)。调用位置我们关心的是在我们当前执行方法之前的调用。
+
 Let's demonstrate call-stack and call-site:
+
+让我们来演示调用堆栈和调用位置:
 
 ```js
 function baz() {
@@ -42,19 +57,35 @@ baz(); // <-- call-site for `baz`
 
 Take care when analyzing code to find the actual call-site (from the call-stack), because it's the only thing that matters for `this` binding.
 
+当分析代码来寻找真正的调用位置时(从调用堆栈里)需要小心，因为这个是`this`绑定唯一在意的事情。
+
 **Note:** You can visualize a call-stack in your mind by looking at the chain of function calls in order, as we did with the comments in the above snippet. But this is painstaking and error-prone. Another way of seeing the call-stack is using a debugger tool in your browser. Most modern desktop browsers have built-in developer tools, which includes a JS debugger. In the above snippet, you could have set a breakpoint in the tools for the first line of the `foo()` function, or simply inserted the `debugger;` statement on that first line. When you run the page, the debugger will pause at this location, and will show you a list of the functions that have been called to get to that line, which will be your call stack. So, if you're trying to diagnose `this` binding, use the developer tools to get the call-stack, then find the second item from the top, and that will show you the real call-site.
+
+**注意:** 你可以在你的脑海里通过按照顺序查看方法调用调用链来呈现一个调用堆栈，就像我们在代码片段中做的注释一样。但是这个是需要细心的而且易于出错。看调用堆栈的另外一个方式是使用你浏览器的调试工具。大多数现代桌面浏览器都有内置的开发者工具包含一个JS调试器。在上面的代码片段中，你可以在工具中在`foo()`方法的第一行设置一个断点，或者简单的在第一行插入一个`debugger;`表达式。当你运行到这一页，调试器会在这个位置暂停，然后将会展示一个在那一行已经被调用的方法列表，这就是你的调用堆栈。所以，如果你试图判断`this`绑定，使用开发者工具获得调用堆栈，然后从最上面找到第二项，他将会向你展示真正的调用位置。
 
 ## Nothing But Rules
 
+## 只有规则
+
 We turn our attention now to *how* the call-site determines where `this` will point during the execution of a function.
+
+现在将我们的注意力转到调用位置是*如何*确定`this`在一个执行的方法中会指向什么的。
 
 You must inspect the call-site and determine which of 4 rules applies. We will first explain each of these 4 rules independently, and then we will illustrate their order of precedence, if multiple rules *could* apply to the call-site.
 
+你必须检查调用位置然后决定应用4个规则中的哪一个。首先我们将会各自解释4个规则中每一个，然后我们将会举例说明如果多个规则可以应用于一个调用位置他们的优先顺序。
+
 ### Default Binding
+
+### 默认绑定
 
 The first rule we will examine comes from the most common case of function calls: standalone function invocation. Think of *this* `this` rule as the default catch-all rule when none of the other rules apply.
 
+我们将要探索的第一个规则是从最常见的方法调用情况中来的:独立方法调用。把这个`this`规则当做是当没有其他规则应用时的默认规则它是捕获全部的。
+
 Consider this code:
+
+考虑这个代码：
 
 ```js
 function foo() {
@@ -68,11 +99,19 @@ foo(); // 2
 
 The first thing to note, if you were not already aware, is that variables declared in the global scope, as `var a = 2` is, are synonymous with global-object properties of the same name. They're not copies of each other, they *are* each other. Think of it as two sides of the same coin.
 
+如果你还没有意识到,需要注意的第一件事，`var a = 2`中变量被声明在全局作用域中，他们是全局对象相同名字的属性的同义词。他们不是相互拷贝的，他们就是对方。想象一下一个硬币的两面。
+
 Secondly, we see that when `foo()` is called, `this.a` resolves to our global variable `a`. Why? Because in this case, the *default binding* for `this` applies to the function call, and so points `this` at the global object.
+
+其次，我们看到当`foo()`被调用，`this.a`指向的是我们的全局变量`a`(resolves:to reach a decision by means of a formal vote:根据投票来达成一个决定)。为什么？因为在这个例子中，在这个方法调用中`this`绑定规则应用了*默认绑定*，所以`this`指向了全局作用域。
 
 How do we know that the *default binding* rule applies here? We examine the call-site to see how `foo()` is called. In our snippet, `foo()` is called with a plain, un-decorated function reference. None of the other rules we will demonstrate will apply here, so the *default binding* applies instead.
 
+我们怎么知道*默认绑定*规则在这里应用了?我们探究一下调用位置来看`foo()`是如何被调用的。在我们的代码片段中，`foo()`是一个平淡无奇的调用，未经装饰的方法引用。没有任何其他我们将展示的规则会在这里应用，所以*默认绑定*在这里被应用了。
+
 If `strict mode` is in effect, the global object is not eligible for the *default binding*, so the `this` is instead set to `undefined`.
+
+如果受了`strict mode`(严格模式)的影响，全局对象作为 *default binding* 将被认为不合法，所以`this`会被设置为`undefined`。
 
 ```js
 function foo() {
@@ -87,6 +126,8 @@ foo(); // TypeError: `this` is `undefined`
 ```
 
 A subtle but important detail is: even though the overall `this` binding rules are entirely based on the call-site, the global object is **only** eligible for the *default binding* if the **contents** of `foo()` are **not** running in `strict mode`; the `strict mode` state of the call-site of `foo()` is irrelevant.
+
+一个微妙但是重要的细节是:即使所有的`this`绑定规则都是完全基于调用位置的，如果`foo()`的**内容不是**运行在`strict mode`(严格模式)下那么全局对象是**唯一**合法的*默认绑定*；`foo()`的调用位置和`strict mode`(严格模式)的状态不相关。(即不受影响)
 
 ```js
 function foo() {
@@ -104,11 +145,19 @@ var a = 2;
 
 **Note:** Intentionally mixing `strict mode` and non-`strict mode` together in your own code is generally frowned upon. Your entire program should probably either be **Strict** or **non-Strict**. However, sometimes you include a third-party library that has different **Strict**'ness than your own code, so care must be taken over these subtle compatibility details.
 
+**注意:** 有意的将`strict mode`和非`strict mode`在你的代码中混合在一起使用通常是不被推荐的。你的整个程序需要最好只使用**严格模式**或者**非严格模式**其中之一。然而，有时候你会在你的代码中使用和你**严格模式**不一样的第三方库，所以必须小心处理这些微妙的兼容细节。
+
 ### Implicit Binding
+
+### 隐含绑定
 
 Another rule to consider is: does the call-site have a context object, also referred to as an owning or containing object, though *these* alternate terms could be slightly misleading.
 
+另外一个需要考虑的规则是:调用位置是否有一个上下文对象，也成为拥有或者容器对象，尽管*这些*交替出现的术语可能会有些误导。
+
 Consider:
+
+考虑一下:
 
 ```js
 function foo() {
@@ -125,13 +174,23 @@ obj.foo(); // 2
 
 Firstly, notice the manner in which `foo()` is declared and then later added as a reference property onto `obj`. Regardless of whether `foo()` is initially declared *on* `obj`, or is added as a reference later (as this snippet shows), in neither case is the **function** really "owned" or "contained" by the `obj` object.
 
+首先，注意到`foo()`声明的行为然后接下里作为一个引用属性被附加到`obj`上。不管`foo()`是初始化声明在`obj`上,或者作为一个引用加到上面(就像这段代码一样),这两种情况都是**方法**真正的被`obj`对象"拥有"或者"包含"。
+
 However, the call-site *uses* the `obj` context to **reference** the function, so you *could* say that the `obj` object "owns" or "contains" the **function reference** at the time the function is called.
+
+然而，调用位置*使用*`obj`上下文来**引用**方法，所以你*可以*说`obj`对象在方法调用的时候"拥有"或者"包含"**方法引用**。
 
 Whatever you choose to call this pattern, at the point that `foo()` is called, it's preceded by an object reference to `obj`. When there is a context object for a function reference, the *implicit binding* rule says that it's *that* object which should be used for the function call's `this` binding.
 
+不论你选择如何称呼这种模式，`foo()`的被调用是通过一个`obj`对象引用作为引导的。当一个方法引用使用一个上下文对象时，*隐晦绑定* 规定规定*那个*对象需要被用作为方法执行的`this`绑定值。
+
 Because `obj` is the `this` for the `foo()` call, `this.a` is synonymous with `obj.a`.
 
+因为`obj`是 `foo()`调用的`this`，所以`this.a`是`obj.a`的同义词。
+
 Only the top/last level of an object property reference chain matters to the call-site. For instance:
+
+调用位置只跟对象属性引用链的最高级/最后级相关。举例来说：
 
 ```js
 function foo() {
@@ -153,9 +212,15 @@ obj1.obj2.foo(); // 42
 
 #### Implicitly Lost
 
+#### 隐晦丢失
+
 One of the most common frustrations that `this` binding creates is when an *implicitly bound* function loses that binding, which usually means it falls back to the *default binding*, of either the global object or `undefined`, depending on `strict mode`.
 
+`this`绑定的创建最常见的挫败是当一个*隐晦绑定*方法丢失了那个绑定，这通常意味着他退回到*默认绑定*，`this`会是全局对象或者`undefined`二者之一，取决于是否`strict mode`(严格模式)。
+
 Consider:
+
+考虑一下:
 
 ```js
 function foo() {
@@ -176,7 +241,11 @@ bar(); // "oops, global"
 
 Even though `bar` appears to be a reference to `obj.foo`, in fact, it's really just another reference to `foo` itself. Moreover, the call-site is what matters, and the call-site is `bar()`, which is a plain, un-decorated call and thus the *default binding* applies.
 
+尽管`bar`似乎是一个指向`obj.foo`的引用，事实上，他只是`foo`本身的另外一个引用。此外，调用位置和什么相关，调用位置是`bar()`，他是一个平淡无奇的调用，未经装饰的调用因此*默认绑定*应用了。
+
 The more subtle, more common, and more unexpected way this occurs is when we consider passing a callback function:
+
+更微妙，更常见，更意料之外的这种情况的发生是当我们考虑传递一个回调方法时:
 
 ```js
 function foo() {
@@ -201,7 +270,11 @@ doFoo( obj.foo ); // "oops, global"
 
 Parameter passing is just an implicit assignment, and since we're passing a function, it's an implicit reference assignment, so the end result is the same as the previous snippet.
 
+参数传递仅仅是一个隐晦的赋值，一旦我们传递一个方法，这就是一个隐晦的引用赋值，所以最后的结果跟前面的那段代码一样。
+
 What if the function you're passing your callback to is not your own, but built-in to the language? No difference, same outcome.
+
+那如果将你的方法传入到一个语言内置的方法中而不是你自己的方法来作为回调会发生什么?没什么不一样，一样的结果。
 
 ```js
 function foo() {
@@ -220,6 +293,8 @@ setTimeout( obj.foo, 100 ); // "oops, global"
 
 Think about this crude theoretical pseudo-implementation of `setTimeout()` provided as a built-in from the JavaScript environment:
 
+把这个粗略的理论上假装可执行的`setTimeout()`当做是JavaScript环境提供的内置方法一样：
+
 ```js
 function setTimeout(fn,delay) {
 	// wait (somehow) for `delay` milliseconds
@@ -229,7 +304,11 @@ function setTimeout(fn,delay) {
 
 It's quite common that our function callbacks *lose* their `this` binding, as we've just seen. But another way that `this` can surprise us is when the function we've passed our callback to intentionally changes the `this` for the call. Event handlers in popular JavaScript libraries are quite fond of forcing your callback to have a `this` which points to, for instance, the DOM element that triggered the event. While that may sometimes be useful, other times it can be downright infuriating. Unfortunately, these tools rarely let you choose.
 
+就像我们看到的那样，我们的回调方法*丢失*他们的`this`绑定是非常常见的。`this`让我们吃惊的另外一种方式是当我们传入的回调方法有意的为这次调用改变了`this`。在流行的JavaScript库中事件处理非常乐于强行将你的回调方法`this`改变，举个例子，被触发事件的DOM节点。虽然有时候可能有用，其他时候会让人勃然大怒。不幸的是，这些工具很少会让你选择。
+
 Either way the `this` is changed unexpectedly, you are not really in control of how your callback function reference will be executed, so you have no way (yet) of controlling the call-site to give your intended binding. We'll see shortly a way of "fixing" that problem by *fixing* the `this`.
+
+不管哪一种`this`出乎意料的改变方式，你不能真正的控制你的回调方法引用会如何被执行，所以你没有办法(至少现在还没有)控制调用位置来给你进行有目的的绑定。我们将马上会看到一种方式通过*固定*`this`来"修复"这个问题.
 
 ### Explicit Binding
 
