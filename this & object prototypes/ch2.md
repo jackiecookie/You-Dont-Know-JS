@@ -324,9 +324,15 @@ But, what if you want to force a function call to use a particular object for th
 
 "All" functions in the language have some utilities available to them (via their `[[Prototype]]` -- more on that later) which can be useful for this task. Specifically, functions have `call(..)` and `apply(..)` methods. Technically, JavaScript host environments sometimes provide functions which are special enough (a kind way of putting it!) that they do not have such functionality. But those are few. The vast majority of functions provided, and certainly all functions you will create, do have access to `call(..)` and `apply(..)`.
 
+在语言中"所有"方法都有一些工具(经由他们的`[[Prototype]]` -- 更多的后面讲)可用于这个任务。明确的说,函数有`call(..)` 和 `apply(..)`方法。技术上来说，JavaScript环境有时候会提供足够特别方法(一种放上去方法)来实现他们没有的功能。但是这很少见。大多数方法被提供，事实上所有你将会创建的方法，他们都可以读取`call(..)` 和 `apply(..)`方法。
+
 How do these utilities work? They both take, as their first parameter, an object to use for the `this`, and then invoke the function with that `this` specified. Since you are directly stating what you want the `this` to be, we call it *explicit binding*.
 
+这些工具是如何工作的？他们都将第一个参数,一个对象来使用作为`this`，然后执行方法使用这个执行的`this`。一旦你直接指定你希望哪个作为`this`，我们叫做*明确绑定*。
+
 Consider:
+
+考虑一下
 
 ```js
 function foo() {
@@ -342,15 +348,27 @@ foo.call( obj ); // 2
 
 Invoking `foo` with *explicit binding* by `foo.call(..)` allows us to force its `this` to be `obj`.
 
+通过`foo.call(..)`执行`foo`使用*明确绑定* 允许我们强行的`this`指向`obj`。
+
 If you pass a simple primitive value (of type `string`, `boolean`, or `number`) as the `this` binding, the primitive value is wrapped in its object-form (`new String(..)`, `new Boolean(..)`, or `new Number(..)`, respectively). This is often referred to as "boxing".
+
+如果你传入一个简单的原始值(`string`, `boolean`, 或者 `number`类型)作为`this`绑定，这个原始值会被他的对象包裹(各自,`new String(..)`, `new Boolean(..)`, 或者 `new Number(..)`)。这通常被叫做"装箱(boxing)"。
 
 **Note:** With respect to `this` binding, `call(..)` and `apply(..)` are identical. They *do* behave differently with their additional parameters, but that's not something we care about presently.
 
+**注意:** 就`this`绑定而言，`call(..)` 和 `apply(..)` 是相同的。但是他们对于他们附加的参数会有不同的行为，这个不是我们现在所要关心的。
+
 Unfortunately, *explicit binding* alone still doesn't offer any solution to the issue mentioned previously, of a function "losing" its intended `this` binding, or just having it paved over by a framework, etc.
+
+不幸的是，*明确绑定* 自己仍然没有提供任何解决方案用来解决我们之前提到过的问题，一个方法"丢失"他自己原本打算的`this`绑定，或者被一个框架覆盖,等等。
 
 #### Hard Binding
 
+#### 硬绑定
+
 But a variation pattern around *explicit binding* actually does the trick. Consider:
+
+但是*明确绑定*的一种变化形式的确可以完成这个戏法。考虑一下：
 
 ```js
 function foo() {
@@ -375,7 +393,11 @@ bar.call( window ); // 2
 
 Let's examine how this variation works. We create a function `bar()` which, internally, manually calls `foo.call(obj)`, thereby forcibly invoking `foo` with `obj` binding for `this`. No matter how you later invoke the function `bar`, it will always manually invoke `foo` with `obj`. This binding is both explicit and strong, so we call it *hard binding*.
 
+让我们来探究下这个变化是如何工作的。我们创建一个方法`bar()`内部手动调用`foo.call(obj)`，此外执行`foo`强行将`this`绑定指向`obj`。不管你多晚执行方法`bar`，他都将会手动执行`foo`使用`obj`。这个绑定明确而且强壮，所以我们叫做 *硬绑定*.
+
 The most typical way to wrap a function with a *hard binding* creates a pass-thru of any arguments passed and any return value received:
+
+最典型的包裹一个方法使用*硬绑定*的方式是创建可以传入任何参数和接受任何返回值的通道。
 
 ```js
 function foo(something) {
@@ -396,6 +418,8 @@ console.log( b ); // 5
 ```
 
 Another way to express this pattern is to create a re-usable helper:
+
+另外一种这个模式的表现是创建一个可重复使用的helper：
 
 ```js
 function foo(something) {
@@ -422,6 +446,8 @@ console.log( b ); // 5
 
 Since *hard binding* is such a common pattern, it's provided with a built-in utility as of ES5: `Function.prototype.bind`, and it's used like this:
 
+因为*硬绑定*是一种很常用的模式，ES5提供了内置的工具:`Function.prototype.bind`，它使用起来就像这样:
+
 ```js
 function foo(something) {
 	console.log( this.a, something );
@@ -440,13 +466,23 @@ console.log( b ); // 5
 
 `bind(..)` returns a new function that is hard-coded to call the original function with the `this` context set as you specified.
 
+`bind(..)` 返回一个根据原始方法按照你执行的`this`上下文的硬编码的新方法。
+
 **Note:** As of ES6, the hard-bound function produced by `bind(..)` has a `.name` property that derives from the original *target function*. For example: `bar = foo.bind(..)` should have a `bar.name` value of `"bound foo"`, which is the function call name that should show up in a stack trace.
+
+**注意:** 在ES6中，`bind(..)`生产的硬绑定方法有一个`.name`属性源于原始的*目标方法*。举个例子:`bar = foo.bind(..)`会有一个`bar.name`值是`"bound foo"`，他是应该在调用跟踪里显示的方法调用名称。
 
 #### API Call "Contexts"
 
+#### API调用"上下文"
+
 Many libraries' functions, and indeed many new built-in functions in the JavaScript language and host environment, provide an optional parameter, usually called "context", which is designed as a work-around for you not having to use `bind(..)` to ensure your callback function uses a particular `this`.
 
+许多库的方法，许多新的JavaScript语言和宿主环境的内置方法，提供一个可选的参数，通常叫做"上下文"，设计用来在不需要使用`bind(..)`情况下确保你的回调用法使用一个指定的`this`。
+
 For instance:
+
+举个例子：
 
 ```js
 function foo(el) {
@@ -463,11 +499,19 @@ var obj = {
 
 Internally, these various functions almost certainly use *explicit binding* via `call(..)` or `apply(..)`, saving you the trouble.
 
+本质上，这些变化方法几乎可以确定经由`call(..)` 或者 `apply(..)`方法使用了*明确绑定*，拯救了你的麻烦。
+
 ### `new` Binding
+
+### `new`绑定
 
 The fourth and final rule for `this` binding requires us to re-think a very common misconception about functions and objects in JavaScript.
 
+第四个也是最后一个`this`绑定规则需要我们重新回想一个关于在JavaScript中方法和对象非常常见的错误观念。
+
 In traditional class-oriented languages, "constructors" are special methods attached to classes, that when the class is instantiated with a `new` operator, the constructor of that class is called. This usually looks something like:
+
+在传统的的面向类的语言中，"构造器"是类的一个特殊方法，当类通过一个`new`得到实例化，类的构造方法会被调用。通常看起来是这样：
 
 ```js
 something = new MyClass(..);
@@ -475,13 +519,23 @@ something = new MyClass(..);
 
 JavaScript has a `new` operator, and the code pattern to use it looks basically identical to what we see in those class-oriented languages; most developers assume that JavaScript's mechanism is doing something similar. However, there really is *no connection* to class-oriented functionality implied by `new` usage in JS.
 
+JavaScript也有一个`new`操作符，代码模式基本上看起来和那些面向类的语言差不多；许多开发者会假设JavaScript的机制会做相似的操作。然而，在JS中使用`new`关键字看起来暗示和面向类的功能方法但是和面向类的功能方法是真的"没有联系"。
+
 First, let's re-define what a "constructor" in JavaScript is. In JS, constructors are **just functions** that happen to be called with the `new` operator in front of them. They are not attached to classes, nor are they instantiating a class. They are not even special types of functions. They're just regular functions that are, in essence, hijacked by the use of `new` in their invocation.
+
+首先，来重新定义一下在JavaScript中什么是"构造器"。在JS中，构造器**仅仅是方法**调用发生在在他们前面使用`new`操作调用时，他们不依附于类，也不会实例化一个类。他们甚至不是一个特殊类型的方法。他们只是平常的方法，本质上，是通过在他们执行时使用`new`来进行操作。
 
 For example, the `Number(..)` function acting as a constructor, quoting from the ES5.1 spec:
 
+举个例子，`Number(..)`方法表现起来就像一个构造器，引用ES5.1的描述:
+
 > 15.7.2 The Number Constructor
+
+> 15.7.2 数字构造器
 >
 > When Number is called as part of a new expression it is a constructor: it initialises the newly created object.
+
+>
 
 So, pretty much any ol' function, including the built-in object functions like `Number(..)` (see Chapter 3) can be called with `new` in front of it, and that makes that function call a *constructor call*. This is an important but subtle distinction: there's really no such thing as "constructor functions", but rather construction calls *of* functions.
 
