@@ -535,20 +535,32 @@ For example, the `Number(..)` function acting as a constructor, quoting from the
 >
 > When Number is called as part of a new expression it is a constructor: it initialises the newly created object.
 
->
+> 当数字被作为一个new表达式的一部分被调用时这就是一个构造器:初始化创造一个新的对象。
 
 So, pretty much any ol' function, including the built-in object functions like `Number(..)` (see Chapter 3) can be called with `new` in front of it, and that makes that function call a *constructor call*. This is an important but subtle distinction: there's really no such thing as "constructor functions", but rather construction calls *of* functions.
 
+所以，许多方法,包括内置的对象方法像`Number(..)`(见第三章)可以在前面使用`new`调用，这样使方法变成一个*构造器调用*。这里有一个重要但是微妙的细节:他们实际上没有类似像"构造方法"，但是有函数的构造调用。
+
 When a function is invoked with `new` in front of it, otherwise known as a constructor call, the following things are done automatically:
 
+当一个方法在前面加上`new`被调用，被称作一个构造器调用，下面的事情将会自动执行：
+
 1. a brand new object is created (aka, constructed) out of thin air
+1. 一个崭新的对象会凭空被创建(又称作被构造)
 2. *the newly constructed object is `[[Prototype]]`-linked*
+2. *新的被构造的对象会被连接上`[[Prototype]]`*
 3. the newly constructed object is set as the `this` binding for that function call
+3. 新的被构造的对象会作为方法调用的`this`绑定
 4. unless the function returns its own alternate **object**, the `new`-invoked function call will *automatically* return the newly constructed object.
+4. 除非方法返回它自己的**对象**，否则`new`新的被执行的方法调用会*自动*返回新的被构造完的对象。
 
 Steps 1, 3, and 4 apply to our current discussion. We'll skip over step 2 for now and come back to it in Chapter 5.
 
+第1,3和4步适用于我们现在的讨论，我们现在将会跳过第二步在第五章在回来讨论他。
+
 Consider this code:
+
+考虑一下这个代码：
 
 ```js
 function foo(a) {
@@ -560,6 +572,8 @@ console.log( bar.a ); // 2
 ```
 
 By calling `foo(..)` with `new` in front of it, we've constructed a new object and set that new object as the `this` for the call of `foo(..)`. **So `new` is the final way that a function call's `this` can be bound.** We'll call this *new binding*.
+
+通过把`new`放在`foo(..)`之前调用方法，我们构造得到一个新的对象然后设置这个新的对象作为`foo(..)`调用的`this`绑定。**所以`new`是最后一种将一个方法的`this`绑定的方式** 我们称之为*new绑定*。
 
 ## Everything In Order
 
