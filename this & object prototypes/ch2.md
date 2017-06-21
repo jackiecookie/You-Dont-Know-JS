@@ -577,11 +577,19 @@ By calling `foo(..)` with `new` in front of it, we've constructed a new object a
 
 ## Everything In Order
 
+## 所有的排序
+
 So, now we've uncovered the 4 rules for binding `this` in function calls. *All* you need to do is find the call-site and inspect it to see which rule applies. But, what if the call-site has multiple eligible rules? There must be an order of precedence to these rules, and so we will next demonstrate what order to apply the rules.
+
+所以，现在我们揭开了`this`绑定在方法调用中的4种规则。你需要做的仅仅是找到调用位置然后检查哪种规则被应用。但是，如果调用位置有第一个适用规则怎么办？我们必须给这些规则按优先级排一下序，所以我们将接下来说明这些规则应用的顺序。
 
 It should be clear that the *default binding* is the lowest priority rule of the 4. So we'll just set that one aside.
 
+应该要清楚*默认绑定*是4种规则中优先级最低的。说我们会先将他放在一边。
+
 Which is more precedent, *implicit binding* or *explicit binding*? Let's test it:
+
+哪个在更前面，*隐晦绑定* 或是 *明确绑定* ?让我们测试以下:
 
 ```js
 function foo() {
@@ -607,7 +615,11 @@ obj2.foo.call( obj1 ); // 2
 
 So, *explicit binding* takes precedence over *implicit binding*, which means you should ask **first** if *explicit binding* applies before checking for *implicit binding*.
 
+所以，*明确绑定* 比 *隐晦绑定* 有更高的优先权，这意味着你应该检查*隐晦绑定*之前**先**检查*明确绑定*是否被适用。
+
 Now, we just need to figure out where *new binding* fits in the precedence.
+
+现在，我们只需要搞清楚*new绑定*在优先顺序中的合适位置就可以了。
 
 ```js
 function foo(something) {
@@ -633,13 +645,23 @@ console.log( bar.a ); // 4
 
 OK, *new binding* is more precedent than *implicit binding*. But do you think *new binding* is more or less precedent than *explicit binding*?
 
+OK,*new绑定* 比 *隐晦绑定* 有更高的优先权。但是你觉得*new绑定*比*明确绑定*的优先权是高还是低呢?
+
 **Note:** `new` and `call`/`apply` cannot be used together, so `new foo.call(obj1)` is not allowed, to test *new binding* directly against *explicit binding*. But we can still use a *hard binding* to test the precedence of the two rules.
+
+**注意:**`new`和`call`/`apply`不可以在一起使用,所以`new foo.call(obj1)`是不被允许的，所以无法直接测试*new绑定*和*明确绑定*。但是我们仍然可以使用一个*硬绑定*来测试这两种规则的优先权。
 
 Before we explore that in a code listing, think back to how *hard binding* physically works, which is that `Function.prototype.bind(..)` creates a new wrapper function that is hard-coded to ignore its own `this` binding (whatever it may be), and use a manual one we provide.
 
+在我们在代码中探索之前，回想一下*硬绑定*是如何工作的，`Function.prototype.bind(..)`创建一个新的包围方法强行的忽略本身的`this`绑定(不论是否存在)，然后使用一个我们手工提供的一个。
+
 By that reasoning, it would seem obvious to assume that *hard binding* (which is a form of *explicit binding*) is more precedent than *new binding*, and thus cannot be overridden with `new`.
 
+因为这个原因，显然可以假设*硬绑定* (*明确绑定* 的一种类型)比*new绑定*的优先级更高，因此不能被new覆盖。
+
 Let's check:
+
+让我们检查一下:
 
 ```js
 function foo(something) {
@@ -659,7 +681,11 @@ console.log( baz.a ); // 3
 
 Whoa! `bar` is hard-bound against `obj1`, but `new bar(3)` did **not** change `obj1.a` to be `3` as we would have expected. Instead, the *hard bound* (to `obj1`) call to `bar(..)` ***is*** able to be overridden with `new`. Since `new` was applied, we got the newly created object back, which we named `baz`, and we see in fact that  `baz.a` has the value `3`.
 
+哇哦！`bar`紧紧的强行绑定住`obj1`，但是`new bar(3)`事实上**没有**像我们期望的那样将`obj1.a`修改为`3`。相反的，`bar(..)`调用的*硬绑定*(对`obj1`的)***是*** 可以通过`new`覆盖的。一旦`new`被应用，我们获得了一个新创建的对象，我们取名叫`baz`，然后我们看到事实上`baz.a`的值是`3`。
+
 This should be surprising if you go back to our "fake" bind helper:
+
+如果你回过头来看我们之前"假的"绑定helper你应该会吃惊：
 
 ```js
 function bind(fn, obj) {
@@ -671,7 +697,11 @@ function bind(fn, obj) {
 
 If you reason about how the helper's code works, it does not have a way for a `new` operator call to override the hard-binding to `obj` as we just observed.
 
+如果你想知道helper的代码是如何工作的原因，这不会有像我们观察到的的一样的方式用一个`new`调用来覆盖硬绑定的`obj`。
+
 But the built-in `Function.prototype.bind(..)` as of ES5 is more sophisticated, quite a bit so in fact. Here is the (slightly reformatted) polyfill provided by the MDN page for `bind(..)`:
+
+但是ES5内置的`Function.prototype.bind(..)`更复杂，事实上复杂的多。这里是(稍微重新格式化了一下)MDN提供的`bind(..)`的polyfill：
 
 ```js
 if (!Function.prototype.bind) {
