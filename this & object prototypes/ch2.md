@@ -738,7 +738,11 @@ if (!Function.prototype.bind) {
 
 **Note:** The `bind(..)` polyfill shown above differs from the built-in `bind(..)` in ES5 with respect to hard-bound functions that will be used with `new` (see below for why that's useful). Because the polyfill cannot create a function without a `.prototype` as the built-in utility does, there's some nuanced indirection to approximate the same behavior. Tread carefully if you plan to use `new` with a hard-bound function and you rely on this polyfill.
 
+**注意:** `bind(..)`polyfill和ES5内置的`bind(..)`在方法硬绑定上使用了不一样的方式,这个polyfill使用了`new`(为什么这么用见下面)。因为polyfill不能像内置方法一样在不使用一个`.prototype`的情况下创建一个方法，使用一些微妙间接的方式来达到相似的行为。如果你计划使用`new`来做方法硬绑定而且依赖这个polyfill那你就需要小心对待了。
+
 The part that's allowing `new` overriding is:
+
+这个部分允许`new`覆盖是:
 
 ```js
 this instanceof fNOP &&
@@ -752,11 +756,19 @@ fBound.prototype = new fNOP();
 
 We won't actually dive into explaining how this trickery works (it's complicated and beyond our scope here), but essentially the utility determines whether or not the hard-bound function has been called with `new` (resulting in a newly constructed object being its `this`), and if so, it uses *that* newly created `this` rather than the previously specified *hard binding* for `this`.
 
+我们事实上不是深究去解释这个把戏是如何工作的(这个跟作用域有关并且比我们这里讨论的复杂),但是事实上这个工具判断硬绑定是否通过`new`(导致一个新的被初始化的对象变成了`this`)来调用，如果是的话，他会使用那个新创建的 `this` 而不是之前*硬绑定*指定的`this`。
+
 Why is `new` being able to override *hard binding* useful?
+
+为什么`new`可以覆盖*硬绑定*那么有用?
 
 The primary reason for this behavior is to create a function (that can be used with `new` for constructing objects) that essentially ignores the `this` *hard binding* but which presets some or all of the function's arguments. One of the capabilities of `bind(..)` is that any arguments passed after the first `this` binding argument are defaulted as standard arguments to the underlying function (technically called "partial application", which is a subset of "currying").
 
+这个行为有用的主要原因是创建一个方法(他可以通过使用`new`来创建对象)他本质上可以忽略预先设置了一些或者全部方法参数的*硬绑定*的`this`.`bind(..)`的其中一个能力是在第一个`this`绑定参数的后面的任何一个被传入的参数默认作为后面方法的标准参数(技术上称作"部分应用"，他是一种"currying").
+
 For example:
+
+举个例子:
 
 ```js
 function foo(p1,p2) {
@@ -775,35 +787,59 @@ baz.val; // p1p2
 
 ### Determining `this`
 
+### 查明`this`
+
 Now, we can summarize the rules for determining `this` from a function call's call-site, in their order of precedence. Ask these questions in this order, and stop when the first rule applies.
 
+现在，我们可以总结从一个方法的调用位置如何查明他应用了哪个`this`规则，根据他们的优先顺序。根据他们顺序提出这些问题，第一个应用规则找到时停止。
+
 1. Is the function called with `new` (**new binding**)? If so, `this` is the newly constructed object.
+
+1. 方法是否通过`new`调用(**new绑定**)?如果是的话, `this`是新的构建完的对象。
 
     `var bar = new foo()`
 
 2. Is the function called with `call` or `apply` (**explicit binding**), even hidden inside a `bind` *hard binding*? If so, `this` is the explicitly specified object.
 
+2. 方法是否通过`call` 或者 `apply`调用(**明确绑定**),或者是隐藏在`bind`之中 *硬绑定*?如果是的话, `this`是明确指定的对象。
+
     `var bar = foo.call( obj2 )`
 
 3. Is the function called with a context (**implicit binding**), otherwise known as an owning or containing object? If so, `this` is *that* context object.
+
+3. 方法是否通过上下文调用(**隐含绑定**),亦或者是他自己或者包含的对象?如果是的话,`this`是那个上下文对象.
 
     `var bar = obj1.foo()`
 
 4. Otherwise, default the `this` (**default binding**). If in `strict mode`, pick `undefined`, otherwise pick the `global` object.
 
+4. 最后,默认的`this`(**默认绑定**).如果是在`strict mode`(严格模式)下,选取`undefined`值，否则的话会选取`global`对象。
+
     `var bar = foo()`
 
 That's it. That's *all it takes* to understand the rules of `this` binding for normal function calls. Well... almost.
 
+这个就是需要了解普通方法调用的 `this` 绑定规则的全部东西. Well...几乎是。
+
 ## Binding Exceptions
+
+## 绑定特例
 
 As usual, there are some *exceptions* to the "rules".
 
+通常情况下,这些"规则"有一些特例.
+
 The `this`-binding behavior can in some scenarios be surprising, where you intended a different binding but you end up with binding behavior from the *default binding* rule (see previous).
+
+`this`绑定的举止可以和一些预先设想好的不太一样令人吃惊，你可能获得一个*默认绑定*规则的绑定行为这个和你原本打算的绑定不太一样(见前面).
 
 ### Ignored `this`
 
+### 忽略`this`
+
 If you pass `null` or `undefined` as a `this` binding parameter to `call`, `apply`, or `bind`, those values are effectively ignored, and instead the *default binding* rule applies to the invocation.
+
+如果你将`null` or `undefined`作为一个`this`绑定参数传入到 `call`, `apply`, 或者 `bind`中，这些值会被忽略，取而代之的是*默认绑定*规则被这次执行所应用。
 
 ```js
 function foo() {
@@ -817,7 +853,11 @@ foo.call( null ); // 2
 
 Why would you intentionally pass something like `null` for a `this` binding?
 
+为什么你有意的传入一些类似`null`的值作为一个`this`绑定?
+
 It's quite common to use `apply(..)` for spreading out arrays of values as parameters to a function call. Similarly, `bind(..)` can curry parameters (pre-set values), which can be very helpful.
+
+在使用`apply(..)`时将一个值的平铺数组作为参数传入一个方法调用时很常见的。类似的，`bind(..)`可以curry参数(预先设置参数)，这可以非常有用。
 
 ```js
 function foo(a,b) {
@@ -834,7 +874,11 @@ bar( 3 ); // a:2, b:3
 
 Both these utilities require a `this` binding for the first parameter. If the functions in question don't care about `this`, you need a placeholder value, and `null` might seem like a reasonable choice as shown in this snippet.
 
+这些工具都需要一个`this`绑定作为第一个参数。如果方法不在乎什么作为`this`，你需要一个占位值，在这个代码片段中`null`看起来似乎像一个合理的选择。
+
 **Note:** We don't cover it in this book, but ES6 has the `...` spread operator which will let you syntactically "spread out" an array as parameters without needing `apply(..)`, such as `foo(...[1,2])`, which amounts to `foo(1,2)` -- syntactically avoiding a `this` binding if it's unnecessary. Unfortunately, there's no ES6 syntactic substitute for currying, so the `this` parameter of the `bind(..)` call still needs attention.
+
+**注意:** ES6中有`...`的铺开操作他可以让你按照语法的在不需要`apply(..)`的情况下"展开"一个数组作为参数，就像`foo(...[1,2])`，他会展开成为`foo(1,2)` -- 语法上在不是必须的情况下避免一个 `this` 绑定。遗憾的是，ES6语法中没有用于替代克里化的，所以`bind(..)`调用的 的`this` 参数仍然需要注意。
 
 However, there's a slight hidden "danger" in always using `null` when you don't care about the `this` binding. If you ever use that against a function call (for instance, a third-party library function that you don't control), and that function *does* make a `this` reference, the *default binding* rule means it might inadvertently reference (or worse, mutate!) the `global` object (`window` in the browser).
 
