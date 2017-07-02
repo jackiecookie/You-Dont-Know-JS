@@ -882,17 +882,31 @@ Both these utilities require a `this` binding for the first parameter. If the fu
 
 However, there's a slight hidden "danger" in always using `null` when you don't care about the `this` binding. If you ever use that against a function call (for instance, a third-party library function that you don't control), and that function *does* make a `this` reference, the *default binding* rule means it might inadvertently reference (or worse, mutate!) the `global` object (`window` in the browser).
 
+然而,当你不在意`this`绑定时经常使用`null`会一个隐藏的小问题。当你在方法中这样使用(举例来说,一个你没办法控制的第三方库的方法)，而且这个方法使用了一个 `this` 引用，*默认绑定* 规则会无意(或者更糟糕)的引用`global`对象(在浏览器中为`window`)。
+
 Obviously, such a pitfall can lead to a variety of *very difficult* to diagnose/track-down bugs.
+
+显然，这样陷阱会导致各种各样非常难以诊断/跟踪的bug。
 
 #### Safer `this`
 
+#### 更安全的`this`
+
 Perhaps a somewhat "safer" practice is to pass a specifically set up object for `this` which is guaranteed not to be an object that can create problematic side effects in your program. Borrowing terminology from networking (and the military), we can create a "DMZ" (de-militarized zone) object -- nothing more special than a completely empty, non-delegated (see Chapters 5 and 6) object.
+
+也许某种"更安全"的实践是传一个已经设置好的执行的对象作为`this`这样可以保证这个对象不会创造问题来影响你的程序。从网络(和军事)上借用一个专用名词,我们可以创建一个"DMZ"(安全区域)对象 -- 一个平淡无奇的完全空,没有委托(见第5章和第6章)的对象。
 
 If we always pass a DMZ object for ignored `this` bindings we don't think we need to care about, we're sure any hidden/unexpected usage of `this` will be restricted to the empty object, which insulates our program's `global` object from side-effects.
 
+如果我们认为我们不需要在意一个方法的`this`绑定时始终传入一个DMZ对象来忽略`this` bindings，我们可以确定任何隐藏/无意的使用`this`将会受到空对象的约束，这样可以免除我们程序`global`对象的影响。
+
 Since this object is totally empty, I personally like to give it the variable name `ø` (the lowercase mathematical symbol for the empty set). On many keyboards (like US-layout on Mac), this symbol is easily typed with `⌥`+`o` (option+`o`). Some systems also let you set up hotkeys for specific symbols. If you don't like the `ø` symbol, or your keyboard doesn't make that as easy to type, you can of course call it whatever you want.
 
+一旦对象完全为空，我个人喜欢给一个变量名称`ø`(小写的数学符号代表空集)。在很多键盘上(像MAC上的US-layout),这个符号可以使用`⌥`+`o` (option+`o`)很简单的打出来。一些系统也可以让你为这个特殊符号设置热键。如果你不喜欢`ø`符号,或者你的键盘不能让很简单的打出来，你当然可以取任何你想要的名字。
+
 Whatever you call it, the easiest way to set it up as **totally empty** is `Object.create(null)` (see Chapter 5). `Object.create(null)` is similar to `{ }`, but without the delegation to `Object.prototype`, so it's "more empty" than just `{ }`.
+
+不论你叫他声明，设置一个**完全为空**最简单的方式是`Object.create(null)`(见第五章).`Object.create(null)`和`{ }`相类似,但是`Object.create(null)`没有`Object.prototype`的委托，所以这个比`{ }`来的更空。
 
 ```js
 function foo(a,b) {
@@ -912,11 +926,19 @@ bar( 3 ); // a:2, b:3
 
 Not only functionally "safer", there's a sort of stylistic benefit to `ø`, in that it semantically conveys "I want the `this` to be empty" a little more clearly than `null` might. But again, name your DMZ object whatever you prefer.
 
+不仅仅是方法上的"更安全"，这对代码风格上`ø`也有益处，这个从语义上传达"我想要`this`完全为空"这比`null`看起来更清楚。但是在说一遍，只要你觉得更好随便怎么样给你的DMZ对象取名。
+
 ### Indirection
+
+### 间接
 
 Another thing to be aware of is you can (intentionally or not!) create "indirect references" to functions, and in those cases,  when that function reference is invoked, the *default binding* rule also applies.
 
+另外一个需要知道的是你可以(有意或者无意)给方法创建"间接引用"，在这些情况下，当那个方法引用被执行，*默认绑定* 规则也被引用。
+
 One of the most common ways that *indirect references* occur is from an assignment:
+
+*间接引用* 发生最常见的的一种方式是一个赋值表达式:
 
 ```js
 function foo() {
@@ -933,15 +955,27 @@ o.foo(); // 3
 
 The *result value* of the assignment expression `p.foo = o.foo` is a reference to just the underlying function object. As such, the effective call-site is just `foo()`, not `p.foo()` or `o.foo()` as you might expect. Per the rules above, the *default binding* rule applies.
 
+赋值表达式`p.foo = o.foo`的结果值是一个隐含的方法对象的引用。因为这样,有效的调用位置是`foo()`，不是你预期中的 `p.foo()` 或者 `o.foo()`。根据上面提到的规则，*默认绑定* 规则被引用。
+
 Reminder: regardless of how you get to a function invocation using the *default binding* rule, the `strict mode` status of the **contents** of the invoked function making the `this` reference -- not the function call-site -- determines the *default binding* value: either the `global` object if in non-`strict mode` or `undefined` if in `strict mode`.
+
+提醒：不论你怎么得到引用了*默认绑定* 规则的方法调用，被调用的内容的`strict mode`(严格模式)状态决定了`this`引用 -- 不是方法调用位置 -- 查明*默认绑定*的值:如果是非`strict mode`就是`global` 对象如果是`strict mode`就是 `undefined`。
 
 ### Softening Binding
 
+### 软绑定
+
 We saw earlier that *hard binding* was one strategy for preventing a function call falling back to the *default binding* rule inadvertently, by forcing it to be bound to a specific `this` (unless you use `new` to override it!). The problem is, *hard-binding* greatly reduces the flexibility of a function, preventing manual `this` override with either the *implicit binding* or even subsequent *explicit binding* attempts.
+
+我们看见之前的*硬绑定*是一种防止方法调用在无意的情况下退回到使用*默认绑定*的策略，强迫他绑定一个指定的 `this` (至少你使用`new`去覆盖他)。问题是，*硬绑定* 大大的约束了方法的灵活性，预防手动的 `this`覆盖不论是*隐晦绑定*或者是随后的试图*明确绑定*。
 
 It would be nice if there was a way to provide a different default for *default binding* (not `global` or `undefined`), while still leaving the function able to be manually `this` bound via *implicit binding* or *explicit binding* techniques.
 
+如果有一种方式提供一种不一样的*默认绑定*方式(不是`global` 或者 `undefined`)这将会很棒，同时也可以让方法经由*隐晦绑定*或者*明确绑定*技术手动绑定`this`。
+
 We can construct a so-called *soft binding* utility which emulates our desired behavior.
+
+我们可以构建一个称作*软绑定*的工具来模仿我们想要得到的行为。
 
 ```js
 if (!Function.prototype.softBind) {
@@ -967,7 +1001,11 @@ if (!Function.prototype.softBind) {
 
 The `softBind(..)` utility provided here works similarly to the built-in ES5 `bind(..)` utility, except with our *soft binding* behavior. It wraps the specified function in logic that checks the `this` at call-time and if it's `global` or `undefined`, uses a pre-specified alternate *default* (`obj`). Otherwise the `this` is left untouched. It also provides optional currying (see the `bind(..)` discussion earlier).
 
+`softBind(..)`工具提供的工作方式类似于ES5内置的`bind(..)` 工具，除了我们的*软绑定*行为。他包括了指定方法在调用时逻辑上检查`this`如果是`global` 或者 `undefined`，用一个预先各自指定的*默认*(`obj`)。否则`this`就不做改变。他也提供了合适的currying(见我们之前讨论的`bind(..)`)。
+
 Let's demonstrate its usage:
+
+让我们来演示他的用法：
 
 ```js
 function foo() {
@@ -992,13 +1030,23 @@ setTimeout( obj2.foo, 10 ); // name: obj   <---- falls back to soft-binding
 
 The soft-bound version of the `foo()` function can be manually `this`-bound to `obj2` or `obj3` as shown, but it falls back to `obj` if the *default binding* would otherwise apply.
 
+软绑定版本的`foo()`方法可以像看到的那样手动绑定 `this`到`obj2` 或者 `obj3`，同时如果是*默认绑定*应用也可以退回到`obj`。
+
 ## Lexical `this`
+
+## 词法`this`
 
 Normal functions abide by the 4 rules we just covered. But ES6 introduces a special kind of function that does not use these rules: arrow-function.
 
+普通方法遵循4种规则我们已经都讲了。但是ES6介绍了一种特别的方法不能使用这些规则:箭头方法。
+
 Arrow-functions are signified not by the `function` keyword, but by the `=>` so called "fat arrow" operator. Instead of using the four standard `this` rules, arrow-functions adopt the `this` binding from the enclosing (function or global) scope.
 
+箭头方法声明不是使用`function`关键字，使用`=>`所以被称作"箭头"操作符。使用4种标准的规则不同的是，箭头方法从包围的(方法或者全局)作用域接受`this`绑定。
+
 Let's illustrate arrow-function lexical scope:
+
+让我们距离说明一下箭头方法的词法作用域:
 
 ```js
 function foo() {
@@ -1023,7 +1071,11 @@ bar.call( obj2 ); // 2, not 3!
 
 The arrow-function created in `foo()` lexically captures whatever `foo()`s `this` is at its call-time. Since `foo()` was `this`-bound to `obj1`, `bar` (a reference to the returned arrow-function) will also be `this`-bound to `obj1`. The lexical binding of an arrow-function cannot be overridden (even with `new`!).
 
+箭头函数在`foo()` 词法作用域中被创建捕获 `foo()`的`this`在他执行的时候。一旦 `foo()` 绑定将`this`到`obj1`，`bar`(一个箭头函数被返回)将也会将`this`绑定到 `obj1`。箭头函数的词法绑定不能被重写(即使是使用`new`!)。
+
 The most common use-case will likely be in the use of callbacks, such as event handlers or timers:
+
+最常见的使用场景是使用在回调中，类似事件控制器或者事件：
 
 ```js
 function foo() {
@@ -1042,6 +1094,8 @@ foo.call( obj ); // 2
 
 While arrow-functions provide an alternative to using `bind(..)` on a function to ensure its `this`, which can seem attractive, it's important to note that they essentially are disabling the traditional `this` mechanism in favor of more widely-understood lexical scoping. Pre-ES6, we already have a fairly common pattern for doing so, which is basically almost indistinguishable from the spirit of ES6 arrow-functions:
 
+箭头函数提供了一个可以替代在方法上使用`bind(..)`的方式来确保`this`，这看起来挺招人喜欢，需要重点注意的是他本质上禁用了传统的`this`机制而采用了更广为人知的词法作用域。ES6之前我们已经有了相当普通的模式来这样做，基本上几乎和ES6的箭头方法的精神一样：
+
 ```js
 function foo() {
 	var self = this; // lexical capture of `this`
@@ -1059,26 +1113,52 @@ foo.call( obj ); // 2
 
 While `self = this` and arrow-functions both seem like good "solutions" to not wanting to use `bind(..)`, they are essentially fleeing from `this` instead of understanding and embracing it.
 
+而`self = this` 和箭头函数在你不想使用 `bind(..)`的时候看起来都像是好的"解决方案"，他们本质上是逃避`this`而不是理解和拥抱他。
+
 If you find yourself writing `this`-style code, but most or all the time, you defeat the `this` mechanism with lexical `self = this` or arrow-function "tricks", perhaps you should either:
+
+如果你发现你自己写`this`风格的代码，但是大多数或者全部时候，你使用词法`self = this` 或者箭头函数"把戏"来击败 `this`机制，也许你也可以选择:
 
 1. Use only lexical scope and forget the false pretense of `this`-style code.
 
+1. 只使用词法作用域然后忘掉`this`风格代码的错误模式.
+
 2. Embrace `this`-style mechanisms completely, including using `bind(..)` where necessary, and try to avoid `self = this` and arrow-function "lexical this" tricks.
+
+2. 完全拥抱`this`风格的机制，包括在需要的时候使用`bind(..)`，然后尝试避免`self = this`和箭头函数"词法this"的把戏。
 
 A program can effectively use both styles of code (lexical and `this`), but inside of the same function, and indeed for the same sorts of look-ups, mixing the two mechanisms is usually asking for harder-to-maintain code, and probably working too hard to be clever.
 
+一个程序可以有效的同时使用两种风格的代码(词法和`this`)，但是在同一个方法的内部，和同种类型的查看，混合两种机制通常会带来难以维护的代码，很有可能是工作变的艰难。
+
 ## Review (TL;DR)
+
+## 回顾(TL;DR)
 
 Determining the `this` binding for an executing function requires finding the direct call-site of that function. Once examined, four rules can be applied to the call-site, in *this* order of precedence:
 
+一个执行的方法查明`this`绑定需要找到方法的调用位置。一个个的检查，4个规则可以被应用于调用位置，他们有这样的优先顺序:
+
 1. Called with `new`? Use the newly constructed object.
+
+1. 通过`new`调用？用新创建的对象。
 
 2. Called with `call` or `apply` (or `bind`)? Use the specified object.
 
+2. 通过 `call` 或者 `apply` (或者 `bind`)调用？使用指定的对象。
+
 3. Called with a context object owning the call? Use that context object.
+
+3. 通过一个上下文对象自己调用?使用这个上下文对象。
 
 4. Default: `undefined` in `strict mode`, global object otherwise.
 
+4. 默认:`strict mode`(严格模式)下为`undefined`,此外是global对象。
+
 Be careful of accidental/unintentional invoking of the *default binding* rule. In cases where you want to "safely" ignore a `this` binding, a "DMZ" object like `ø = Object.create(null)` is a good placeholder value that protects the `global` object from unintended side-effects.
 
+有意/无意执行*默认绑定*时要小心。当你想"更安全"的忽略一个 `this`绑定的情况下，一个"DMZ"对象类似`ø = Object.create(null)` 是一个好的占位值他可以保护无意间使用`global`对象带来的不好的影响。
+
 Instead of the four standard binding rules, ES6 arrow-functions use lexical scoping for `this` binding, which means they adopt the `this` binding (whatever it is) from its enclosing function call. They are essentially a syntactic replacement of `self = this` in pre-ES6 coding.
+
+和4种标准的绑定规则不同，ES6箭头函数使用词法作用域作为`this`绑定，这意味着他们从包围的方法调用中获取`this`绑定。在ES6之前这本质上在可以通过 `self = this`这种句法上来替代。
