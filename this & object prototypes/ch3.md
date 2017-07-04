@@ -1,13 +1,24 @@
 # You Don't Know JS: *this* & Object Prototypes
 # Chapter 3: Objects
 
+# 你不知道的JS：*this* & Object Prototypes
+# 第三章: Objects
+
 In Chapters 1 and 2, we explained how the `this` binding points to various objects depending on the call-site of the function invocation. But what exactly are objects, and why do we need to point to them? We will explore objects in detail in this chapter.
+
+在第一章和第二章，我们解释了`this`绑定如何指向各种对象取决于方法执行时的调用位置。但是究竟是什么对象，为什么我们需要指向他们？我们将会在这张中详细解释。
 
 ## Syntax
 
+## 句法
+
 Objects come in two forms: the declarative (literal) form, and the constructed form.
 
+对象有两个来源：一种来自于声明(字面上)，一种来自于构建。
+
 The literal syntax for an object looks like this:
+
+对象字面上的句法看起来像这样：
 
 ```js
 var myObj = {
@@ -18,6 +29,8 @@ var myObj = {
 
 The constructed form looks like this:
 
+而来自于构建的对象看起来像这样:
+
 ```js
 var myObj = new Object();
 myObj.key = value;
@@ -25,11 +38,19 @@ myObj.key = value;
 
 The constructed form and the literal form result in exactly the same sort of object. The only difference really is that you can add one or more key/value pairs to the literal declaration, whereas with constructed-form objects, you must add the properties one-by-one.
 
+来自于构建和来自于字面的结果对象实际上是同种类型的对象。唯一的区别是你可以在字面声明时添加一个或者多个键/值对，然而对于来自于构建的对象，你必须一个接一个的增加属性。
+
 **Note:** It's extremely uncommon to use the "constructed form" for creating objects as just shown. You would pretty much always want to use the literal syntax form. The same will be true of most of the built-in objects (see below).
+
+**属性:** 我们很少使用像我们刚才展示的那样构建的方式来创建对象。我们应该使用字面量的方式来创建对象。大多数内置对象是使用这种方式(见后续)。
+
+## Type
 
 ## Type
 
 Objects are the general building block upon which much of JS is built. They are one of the 6 primary types (called "language types" in the specification) in JS:
+
+JS大多数的构建基于大量的对象块。在JS中主要有6种类型(在标准中被称作"语言类型")：
 
 * `string`
 * `number`
@@ -40,17 +61,31 @@ Objects are the general building block upon which much of JS is built. They are 
 
 Note that the *simple primitives* (`string`, `number`, `boolean`, `null`, and `undefined`) are **not** themselves `objects`. `null` is sometimes referred to as an object type, but this misconception stems from a bug in the language which causes `typeof null` to return the string `"object"` incorrectly (and confusingly). In fact, `null` is its own primitive type.
 
+注意这些*原始的简单类型*(`string`, `number`, `boolean`, `null`, 和 `undefined`)本身**不是**`objects`。`null`有时被引用作为一个对象类型，但是这是一个来自于`typeof null`会返回一个错误的(令人疑惑的)`"object"`字符串的语言bug所引起的误解。事实上,`null`是他本身的原始类型。
+
 **It's a common mis-statement that "everything in JavaScript is an object". This is clearly not true.**
+
+**"在JavaScript中所有东西都是一个对象"这是一个常见的错误观念。这显示是不对的。**
 
 By contrast, there *are* a few special object sub-types, which we can refer to as *complex primitives*.
 
+用于对照，有几个特殊的二级类型对象，我们可以引用作为*复杂的原始类型*。
+
 `function` is a sub-type of object (technically, a "callable object"). Functions in JS are said to be "first class" in that they are basically just normal objects (with callable behavior semantics bolted on), and so they can be handled like any other plain object.
+
+`function`是一个对象的二级类型(技术上来，可以被称作对象)。在JS中方法被称作一级类型他们本质上只是一个普通对象(从语义上的行为上称作)，所有他们可以像任何一个普通对象那样被处理。
 
 Arrays are also a form of objects, with extra behavior. The organization of contents in arrays is slightly more structured than for general objects.
 
+Arrays也是一种类型的对象，有额外的行为。数组的内容的组织比大多数对象来的结构化好一点。
+
 ### Built-in Objects
 
+### 内置对象
+
 There are several other object sub-types, usually referred to as built-in objects. For some of them, their names seem to imply they are directly related to their simple primitives counter-parts, but in fact, their relationship is more complicated, which we'll explore shortly.
+
+有几个其他的二级类型对象，经常作为内置对象被引用。其中的一些，他们的名字似乎暗示他们和他们的简单的原始类型的直接关系，但是事实上，他们的关系要更复杂，我们会剪短的研究一下。
 
 * `String`
 * `Number`
@@ -64,7 +99,11 @@ There are several other object sub-types, usually referred to as built-in object
 
 These built-ins have the appearance of being actual types, even classes, if you rely on the similarity to other languages such as Java's `String` class.
 
+如果你依赖其他语言像Java的`String`类去比较相似，这些内置对象有正在类型的外观,甚至是类。
+
 But in JS, these are actually just built-in functions. Each of these built-in functions can be used as a constructor (that is, a function call with the `new` operator -- see Chapter 2), with the result being a newly *constructed* object of the sub-type in question. For instance:
+
+但是在JS中，他们真的只是内置方法。每个内置方法可以作为构造器来使用(就是使用`new`操作符来调用一个方法 -- 见第二章)，结果是一个子类型的新的被构造的对象。举个例子：
 
 ```js
 var strPrimitive = "I am a string";
@@ -81,11 +120,19 @@ Object.prototype.toString.call( strObject );	// [object String]
 
 We'll see in detail in a later chapter exactly how the `Object.prototype.toString...` bit works, but briefly, we can inspect the internal sub-type by borrowing the base default `toString()` method, and you can see it reveals that `strObject` is an object that was in fact created by the `String` constructor.
 
+`Object.prototype.toString...`如何工作的细节我们将会在稍后的章节里看见，但是我们可以借助基础的默认`toString()`方法来查看内部的子类型，你可以看见通过`String`构造器创建的`strObject`显示他是一个对象。
+
 The primitive value `"I am a string"` is not an object, it's a primitive literal and immutable value. To perform operations on it, such as checking its length, accessing its individual character contents, etc, a `String` object is required.
+
+原始值`"I am a string"`不是一个对象，他是一个原始字面量然后立即被赋值。必须是一个`String`对象，才能在上面完成一些工作，类似检查他的长度，访问他们各自的内容等等。
 
 Luckily, the language automatically coerces a `"string"` primitive to a `String` object when necessary, which means you almost never need to explicitly create the Object form. It is **strongly preferred** by the majority of the JS community to use the literal form for a value, where possible, rather than the constructed object form.
 
+幸运的是，需要的时候语言自动迫使一个`"string"`原始值为`String`对象，这意味着你几乎不需要明确的创建一个对象。大多数JS社区**强烈推荐**在可能的地方使用字面量形式对象，而不是构造对象方式。
+
 Consider:
+
+考虑一下：
 
 ```js
 var strPrimitive = "I am a string";
@@ -97,13 +144,23 @@ console.log( strPrimitive.charAt( 3 ) );	// "m"
 
 In both cases, we call a property or method on a string primitive, and the engine automatically coerces it to a `String` object, so that the property/method access works.
 
+在全部情况下，我们调用一个string原始类型的属性或者方法，引擎会自动强迫他指向一个`String`对象，所以属性/方法才可以访问。
+
 The same sort of coercion happens between the number literal primitive `42` and the `new Number(42)` object wrapper, when using methods like `42.359.toFixed(2)`. Likewise for `Boolean` objects from `"boolean"` primitives.
+
+当使用类似`42.359.toFixed(2)`的方法时,相同类型的强迫也发生在number字面量原始类型`42`和`new Number(42)`包裹对象中。同样也发生在`"boolean"`原始类型的 `Boolean`对象。
 
 `null` and `undefined` have no object wrapper form, only their primitive values. By contrast, `Date` values can *only* be created with their constructed object form, as they have no literal form counter-part.
 
+`null` 和 `undefined` 没有从对象包裹而来，只有他原始值。用于对照，`Date`值只能通过他的构造对象被创建，没有通过字面创建的部分。
+
 `Object`s, `Array`s, `Function`s, and `RegExp`s (regular expressions) are all objects regardless of whether the literal or constructed form is used. The constructed form does offer, in some cases, more options in creation than the literal form counterpart. Since objects are created either way, the simpler literal form is almost universally preferred. **Only use the constructed form if you need the extra options.**
 
+`Object`, `Array`, `Function`, 和 `RegExp`(正则表达式)不管他是通过字面量或者构造而来他都是对象。在某些情况下，构造而来的对象和字面量的对象比起来某个方面可以提供更多的选项。不论对象用哪种方式创建，更简单的字面量创建普遍认为是更好的。**只在你需要额外的选项的时候使用构造方式创建对象。**
+
 `Error` objects are rarely created explicitly in code, but usually created automatically when exceptions are thrown. They can be created with the constructed form `new Error(..)`, but it's often unnecessary.
+
+`Error`对象很少在代码中明确创建，通常是在当错误抛出的时候自动创建。他可以通过`new Error(..)`构造创建，但是常常是不需要的。
 
 ## Contents
 
