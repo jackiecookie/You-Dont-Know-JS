@@ -166,9 +166,15 @@ The same sort of coercion happens between the number literal primitive `42` and 
 
 As mentioned earlier, the contents of an object consist of values (any type) stored at specifically named *locations*, which we call properties.
 
+我们之前提到过，一个对象值组成的内容存储在指定的被取名的位置,我们称作属性。
+
 It's important to note that while we say "contents" which implies that these values are *actually* stored inside the object, that's merely an appearance. The engine stores values in implementation-dependent ways, and may very well not store them *in* some object container. What *is* stored in the container are these property names, which act as pointers (technically, *references*) to where the values are stored.
 
+需要注意的重要点是我们说的"内容"说的是通常不显示但是确实保存在对象中的值。引擎用独立执行的方式存储值，很可能不是存储在一些对象容器中。他们存储在容器的属性名称中，并指向(引用)存储值的位置。
+
 Consider:
+
+考虑一下：
 
 ```js
 var myObject = {
@@ -182,9 +188,15 @@ myObject["a"];	// 2
 
 To access the value at the *location* `a` in `myObject`, we need to use either the `.` operator or the `[ ]` operator. The `.a` syntax is usually referred to as "property" access, whereas the `["a"]` syntax is usually referred to as "key" access. In reality, they both access the same *location*, and will pull out the same value, `2`, so the terms can be used interchangeably. We will use the most common term, "property access" from here on.
 
+为了读取`myObject` `a`位置的值，我们需要使用 `.`操作符或者`[ ]`操作符其中之一。`.a`语法通常引用作为"属性"读取，然而`["a"]`语法通常引用作为"键"读取。现实情况是，两种读取的是同一个位置，也会获取到相同的值，`2`,所以他们可以被替换着使用。从这里开始我们将使用常见的一种，"属性读取"。
+
 The main difference between the two syntaxes is that the `.` operator requires an `Identifier` compatible property name after it, whereas the `[".."]` syntax can take basically any UTF-8/unicode compatible string as the name for the property. To reference a property of the name "Super-Fun!", for instance, you would have to use the `["Super-Fun!"]` access syntax, as `Super-Fun!` is not a valid `Identifier` property name.
 
+两种语法主要的区别在于`.`操作符需要一个`标识符`兼容的属性名称，然而`[".."]`语法基本上可以用任何一个UTF-8/unicode兼容的字符串作为读取属性的名称。为了引用名称为"Super-Fun!"的属性，举个例子，你你应该使用`["Super-Fun!"]` 读取语法，`Super-Fun!`不是一个有效的`标识符`属性名称。
+
 Also, since the `[".."]` syntax uses a string's **value** to specify the location, this means the program can programmatically build up the value of the string, such as:
+
+同时，一旦`[".."]`语法使用一个字符串**值**指出一个位置，这意味着程序可以以编程的方式构建字符串的值，类似于：
 
 ```js
 var wantA = true;
@@ -205,6 +217,8 @@ console.log( myObject[idx] ); // 2
 
 In objects, property names are **always** strings. If you use any other value besides a `string` (primitive) as the property, it will first be converted to a string. This even includes numbers, which are commonly used as array indexes, so be careful not to confuse the use of numbers between objects and arrays.
 
+在对象中,属性名称**都是**字符串。如果你使用任何其他非`string`(原始值)作为属性，他将会首先转换为一个字符串。这也包括了数字，通常会作为数组索引值被使用，所以在对象和数组之前小心的使用数字避免引起误会。
+
 ```js
 var myObject = { };
 
@@ -219,9 +233,15 @@ myObject["[object Object]"];	// "baz"
 
 ### Computed Property Names
 
+### 计算过的属性名称
+
 The `myObject[..]` property access syntax we just described is useful if you need to use a computed expression value *as* the key name, like `myObject[prefix + name]`. But that's not really helpful when declaring objects using the object-literal syntax.
 
+如果你需要使用一个计算表达式值作为键的名称`myObject[..]`属性读取表达式我们发现是有用的，类型`myObject[prefix + name]`这样的操作。但是当使用字面量表达式声明对象时他是没用的。
+
 ES6 adds *computed property names*, where you can specify an expression, surrounded by a `[ ]` pair, in the key-name position of an object-literal declaration:
+
+ES6增加了*计算过的属性名称*，你可以指定一个表达式，通过一对`[ ]`包围，在对象字面量声明表达式中的键名称的位置使用。
 
 ```js
 var prefix = "foo";
@@ -236,6 +256,8 @@ myObject["foobaz"]; // world
 ```
 
 The most common usage of *computed property names* will probably be for ES6 `Symbol`s, which we will not be covering in detail in this book. In short, they're a new primitive data type which has an opaque unguessable value (technically a `string` value). You will be strongly discouraged from working with the *actual value* of a `Symbol` (which can theoretically be different between different JS engines), so the name of the `Symbol`, like `Symbol.Something` (just a made up name!), will be what you use:
+
+*计算过的名称* 最常使用的场景将可能是ES6的`Symbol`，我们将不会在这个书中介绍他的详情。简短来说，他是一个新的原始数据类型有一个不透明不可猜测的值(技术上是一个 `string`值)。在工作中使用`Symbol`的*实际值*你将会感到很大的挫败感(理论上根据不同的JS引擎值会不同)，`Symbol`的名称，类似`Symbol.Something`(一个编造的名称！)，将会这样使用：
 
 ```js
 var myObject = {
